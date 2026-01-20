@@ -9,3 +9,4 @@ use App\core\Database;
     $db = Database::getInstance();
     $db->getConnection();
     echo "hello world";
+    phpinfo();
