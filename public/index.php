@@ -2,10 +2,28 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use app\core\Router ;
+// use app\controller\
+
+// echo '<pre>' ;
+// print_r($_SERVER) ;
+// echo '</pre>' ;
+
+// use App\core\Database;
+
+//     $db = Database::getInstance();
+//     $db->getConnection();
+//     echo "hello world";echo "hello world";
 
 
-use App\core\Database;
+$router = new Router() ;
 
-    $db = Database::getInstance();
-    $db->getConnection();
-    echo "hello world";
+$router->get('/' , "dashboard/dashboard") ;
+
+// ha kifach tst3mlo router 
+// $router->get( path , [classname::class , 'method' ]) ;
+// $router->get( path , func(){ ... }) ;
+
+
+
+$router->resolve() ;
