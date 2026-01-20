@@ -20,6 +20,9 @@ $router = new Router() ;
 
 $router->get('/' , "dashboard/dashboard") ;
 
+// ha kifach tst3mlo router 
+// $router->get( path , [classname::class , 'method' ]) ;
+// $router->get( path , func(){ ... }) ;
 
 
 
