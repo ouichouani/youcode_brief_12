@@ -2,8 +2,9 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\core\Router ;
-
 use App\core\Database;
+// use app\controller\
+
 use App\controllers\AuthController;
 
 session_start();
