@@ -1,10 +1,10 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
+define('BASE_URL', '/'); 
 
 use App\core\Router ;
 use App\core\Database;
-// use app\controller\
 
 use App\controllers\AuthController;
 use App\controllers\QuestionnaireController;
@@ -43,6 +43,7 @@ $router->get('/forgot-password',[AuthController::class , "showForgotPassword"]);
 $router->post('/forgot-password',[AuthController::class , "forgotPassword"]);
 //just for testing
 $router->get('/signup',[QuestionnaireController::class , "askQuest"]);
+$router->get('/questionnaire',[QuestionnaireController::class , "captureResponse"]);
 
 // // ha kifach tst3mlo router 
 // $router->get( path , [classname::class , 'method' ]) ;

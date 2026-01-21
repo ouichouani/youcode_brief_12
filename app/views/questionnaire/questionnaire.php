@@ -10,8 +10,8 @@
                 Répondez à quelques questions pour que notre IA puisse générer votre roadmap personnalisée.
             </p>
         </div>
-
-        <form action="/questionnaire" method="POST" class="space-y-8">
+        
+        <form action="/evolveai/questionnaire" method="POST" class="space-y-8">
             <?php if (empty($questions)): ?>
                 <div class="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 text-center">
                     <p class="text-slate-400 italic">Chargement des questions...</p>
