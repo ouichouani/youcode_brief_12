@@ -2,17 +2,11 @@
 
 namespace App\controllers;
 
-use App\core\controller;
+use App\core\Controller;
 use App\models\User;
 
 class AuthController extends Controller{
-    private $db;
     
-    public function __construct(){
-        // parent::__construct();
-        $this->db = Database::getInstance()->getConnection();
-    }
-
     public function showRegister(){
         $this->view('user/register');
     }
@@ -23,11 +17,31 @@ class AuthController extends Controller{
             exit;
         }
 
-        $fullname = htmlspecialchars($_POST['fullname']);
-        $email = htmlspecialchars($_POST['email']);
-        $password = $_POST['password'];
-        $confirm_password = $_POST['confirm_password'];
+        $fullname = htmlspecialchars(trim($_POST['fullname'] ?? ''));
+        $email = htmlspecialchars(trim($_POST['email'] ?? ''));
+        $password = $_POST['password'] ?? '';
+        $confirm_password = $_POST['confirm_password'] ?? '';
 
+        $errors = $this->validateRegistration($fullname, $email, $password, $confirm_password);
+
+        if (!empty($errors)) {
+            $this->storeValidationErrors($errors, ['fullname' => $fullname, 'email' => $email]);
+            header('Location: /register');
+            exit;
+        }
+        
+        if ($this->processRegistration($fullname, $email, $password)) {
+            $this->storeSuccessMessage("Registration successful! Please login.");
+            header('Location: /login');
+            exit;
+        } else {
+            $this->storeErrorMessage("Registration failed. Please try again.");
+            header('Location: /register');
+            exit;
+        }
+    }
+
+    private function validateRegistration(string $fullname, string $email, string $password, string $confirm_password): array {
         $errors = [];
 
         if (empty($fullname) || strlen($fullname) < 2) {
@@ -53,33 +67,18 @@ class AuthController extends Controller{
         if ($password !== $confirm_password) {
             $errors[] = "Passwords do not match";
         }
-        $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        if ($stmt->fetch()) {
+
+        if (User::emailExists($email)) {
             $errors[] = "Email already registered";
         }
 
-        if (!empty($errors)) {
-            session_start();
-            $_SESSION['errors'] = $errors;
-            $_SESSION['old'] = ['fullname' => $fullname, 'email' => $email];
-            header('Location: /register');
-            exit;
-        }
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $this->db->prepare("INSERT INTO users (fullname, email, password) VALUES (?, ?, ?)");
+        return $errors;
+    }
+
+    private function processRegistration(string $fullname, string $email, string $password): bool {
+        $hashed_password = User::hashPassword($password);
         
-        if ($stmt->execute([$fullname, $email, $hashed_password])) {
-            session_start();
-            $_SESSION['success'] = "Registration successful! Please login.";
-            header('Location: /login');
-            exit;
-        } else {
-            session_start();
-            $_SESSION['errors'] = ["Registration failed. Please try again."];
-            header('Location: /register');
-            exit;
-        }
+        return User::create(['fullname' => $fullname,'email' => $email,'password' => $hashed_password]);
     }
 
     public function showLogin(){
@@ -92,42 +91,52 @@ class AuthController extends Controller{
             exit;
         }
 
-        $email = htmlspecialchars($_POST['email']);
-        $password = $_POST['password'];
-
-        $errors = [];
+        $email = htmlspecialchars(trim($_POST['email'] ?? ''));
+        $password = $_POST['password'] ?? '';
 
         if (empty($email) || empty($password)) {
-            $errors[] = "Email and password are required";
-        }
-
-        if (!empty($errors)) {
-            session_start();
-            $_SESSION['errors'] = $errors;
+            $this->storeErrorMessage("Email and password are required");
             header('Location: /login');
             exit;
         }
-
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-        if ($user && password_verify($password, $user['password'])) {
-            session_start();
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_fullname'] = $user['fullname'];
-            $_SESSION['user_email'] = $user['email'];
-            $_SESSION['logged_in'] = true;
-            
+        $user = User::findByEmail($email);
+        if ($user && User::validatePassword($password, $user['password'])) {
+            $this->startUserSession($user);
             header('Location: /dashboard');
             exit;
         } else {
-            session_start();
-            $_SESSION['errors'] = ["Invalid email or password"];
+            $this->storeErrorMessage("Invalid email or password");
             header('Location: /login');
             exit;
         }
     }
+
+    private function startUserSession(array $user): void {
+        session_start();
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_fullname'] = $user['fullname'];
+        $_SESSION['user_email'] = $user['email'];
+        $_SESSION['logged_in'] = true;
+    }
+
+    private function storeValidationErrors(array $errors, array $oldData = []): void {
+        session_start();
+        $_SESSION['errors'] = $errors;
+        if (!empty($oldData)) {
+            $_SESSION['old'] = $oldData;
+        }
+    }
+
+     private function storeErrorMessage(string $message): void {
+        session_start();
+        $_SESSION['errors'] = [$message];
+    }
+
+    private function storeSuccessMessage(string $message): void {
+        session_start();
+        $_SESSION['success'] = $message;
+    }
+
 
     public function logout(){
         session_start();

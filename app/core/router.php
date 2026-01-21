@@ -2,69 +2,74 @@
 
 namespace App\core;
 
-use App\core\controller;
+use App\core\Request;
 
 class Router
 {
-    protected $routes = [];
-    protected $params = [];
 
-    public function get($url, $controllerAction)
+    private $routes = [
+        'get' => [],
+        'post' => []
+    ];
+
+    private Request $request;
+
+    public function __construct()
     {
-        $this->addRoute('GET', $url, $controllerAction);
+        $this->request = new Request();
     }
 
-    public function post($url, $controllerAction)
+    public function get(string $path, $callback)
     {
-        $this->addRoute('POST', $url, $controllerAction);
+        $this->routes['get'][$path] = $callback;
     }
 
-    private function addRoute($method, $url, $controllerAction)
+    public function post(string $path, $callback)
     {
-        $this->routes[$method][$url] = $controllerAction;
+        $this->routes['post'][$path] = $callback;
     }
 
-    public function dispatch()
+    public function resolve()
     {
-        $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $method = $_SERVER['REQUEST_METHOD'];
-        $baseDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-        if ($baseDir !== '/' && strpos($url, $baseDir) === 0) {
-            $url = substr($url, strlen($baseDir));
+
+
+        $path = strtolower($this->request->getPath());
+        $method = strtolower($this->request->getMethod());
+
+        $callback = $this->routes[$method][$path];
+
+        if (is_string($callback)) {
+            echo $this->renderView($callback);
+            return;
         }
-        
-        $url = rtrim($url, '/') ?: '/';
 
-        if (isset($this->routes[$method][$url])) {
-            $controllerAction = $this->routes[$method][$url];
-            $this->callControllerAction($controllerAction);
-        } else {
-            $this->handleNotFound();
+
+        if (is_array($callback)) {
+            $callback[0] = new $callback[0]();
         }
+
+        call_user_func($callback);
     }
 
-    private function callControllerAction($controllerAction)
+    public function renderView($view)
     {
-        list($controllerName, $action) = explode('@', $controllerAction);
-        
-        $controllerClass = "App\\controllers\\" . $controllerName;
-        
-        if (class_exists($controllerClass)) {
-            $controller = new $controllerClass();
-            
-            if (method_exists($controller, $action)) {
-                $controller->$action();
-            } else {
-                $this->handleNotFound();
-            }
-        } else {
-            $this->handleNotFound();
-        }
+        $target_view = $this->renderOnlyView($view);
+        $layout = $this->renderLayout();
+
+        return str_replace('{{content}}', $target_view, $layout);
     }
 
-    private function handleNotFound()
+    public function renderLayout()
     {
-        http_response_code(404);
-        echo "404 - Page Not Found";
+        ob_start();
+        require_once dirname(__dir__) . "/views/layout/layout.php";
+        return ob_get_clean();
+    }
+
+    public function renderOnlyView($view)
+    {
+        ob_start();
+        require_once dirname(__dir__) . "/views/$view.php";
+        return ob_get_clean();
     }
 }

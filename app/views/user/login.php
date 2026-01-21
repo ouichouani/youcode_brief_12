@@ -1,12 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - AI Revenue Generator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head> -->
 <section class="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen">
     <div class="container mx-auto px-4 py-8">
         <div class="max-w-md mx-auto">
@@ -88,26 +79,6 @@
                     </p>
                 </div>
             </div>
-
-            <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-white p-4 rounded-lg shadow text-center">
-                    <i class="fas fa-bolt text-indigo-500 text-xl mb-2"></i>
-                    <p class="text-sm font-medium">AI-Powered Plans</p>
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow text-center">
-                    <i class="fas fa-chart-line text-indigo-500 text-xl mb-2"></i>
-                    <p class="text-sm font-medium">Revenue Tracking</p>
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow text-center">
-                    <i class="fas fa-graduation-cap text-indigo-500 text-xl mb-2"></i>
-                    <p class="text-sm font-medium">Skill Building</p>
-                </div>
-            </div>
-
-            <div class="text-center mt-8 text-gray-500 text-sm">
-                <p>© 2026 AI Revenue Generator. Your path to financial freedom starts here.</p>
-            </div>
         </div>
     </div>
 </section>
-<!-- </html> -->
