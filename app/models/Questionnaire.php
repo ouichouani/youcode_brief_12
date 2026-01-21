@@ -9,7 +9,7 @@ use Exception;
 
 class Questionnaire
 {
-    private string $questionsTable = 'questions';
+    private string $questionsTable = 'question';
     private string $responsesTable = 'user_responses';
     private PDO $db;
     private AI $ai;

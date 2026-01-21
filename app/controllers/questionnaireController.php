@@ -4,6 +4,7 @@ namespace App\controllers;
 
 use App\Models\Questionnaire;
 use App\models\Roadmap;
+
 class QuestionnaireController
 {
     private Questionnaire $model;
@@ -58,11 +59,11 @@ class QuestionnaireController
     {
         extract($data);
         ob_start();
-        require "app/views/$view.php";
+        require dirname(__DIR__) . "/views/$view.php";
         $content = ob_get_clean();
 
         ob_start();
-        require "app/views/layout/layout.php";
+        require dirname(__DIR__) . "/views/layout/layout.php";
         $layout = ob_get_clean();
 
         echo str_replace('{{content}}', $content, $layout);
