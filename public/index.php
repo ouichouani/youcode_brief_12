@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use app\core\Router ;
+use App\core\Database;
 // use app\controller\
 
 // echo '<pre>' ;
