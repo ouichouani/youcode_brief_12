@@ -11,16 +11,16 @@ header('Content-Type: application/json');
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-use App\Models\aiService;
+use App\Models\AI;
 
-$ai = new aiService($apiKey = $_ENV['HF_TOKEN'] ?? getenv('HF_TOKEN'));
+$ai = new AI($apiKey = $_ENV['HF_TOKEN'] ?? getenv('HF_TOKEN'));
 // --- Simple .env Loader ---
 
 
-$ai->loadEnv(__DIR__ . '/.env');
+// $ai->loadEnv(__DIR__ . '/.env');
 
 
-$model = $_ENV['HF_MODEL'] ?? getenv('HF_MODEL') ?: 'mistralai/Mistral-7B-Instruct-v0.3';
+
 
 if (!$apiKey) {
     echo json_encode(['error' => 'Hugging Face Token not configured in .env file.']);
