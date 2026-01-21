@@ -1,3 +1,4 @@
+-- Active: 1768245236744@@127.0.0.1@5432@EvolveAi
 /*
 offfff
 
@@ -154,3 +155,53 @@ CREATE TABLE likes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+--ali's sql 
+CREATE TABLE IF NOT EXISTS questions (
+    id SERIAL PRIMARY KEY,
+    question_text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- User responses table
+CREATE TABLE IF NOT EXISTS user_responses (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    question_id INTEGER REFERENCES questions (id),
+    response_text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Roadmaps table
+CREATE TABLE IF NOT EXISTS roadmaps (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Initial questions
+INSERT INTO questions (question_text) VALUES
+('What''s your age?'),
+('What''s your main goal?'),
+('Which best describes you?'),
+('Which income stream are you most familiar with?'),
+('What''s your current work schedule?'),
+('What issues are you facing at work?'),
+('How many hours do you usually work each day?'),
+('How many hours would you like to work each day?'),
+('How do you feel about your money right now?'),
+('Have you ever tried making money outside your main job?'),
+('How confident are you with AI tools?'),
+('Have you used any of these AI tools before?'),
+('What areas would you love to explore?'),
+('Are you open to picking up new skills?'),
+('How ready are you to dive into AI?'),
+('Do you have a dream goal you''re working toward?'),
+('How much time can you invest in your goals daily?'),
+('How well can you stay focused?'),
+('Which device will you use for learning?'),
+('What type of lesson format do you prefer?');
+
+
+select * from users;
+select * from questions;
