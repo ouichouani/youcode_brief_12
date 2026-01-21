@@ -251,5 +251,60 @@ class AuthController extends Controller{
             exit;
         }
     }
-    
+    private function sendPasswordResetEmail(string $email, string $token): bool {
+        try {
+            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . "/reset-password/" . $token;
+            $subject = "Password Reset Request - AI Revenue Generator";
+            $body = "
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset='UTF-8'>
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+                    .button { display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 20px 0; }
+                    .code-box { background: #f0f0f0; padding: 15px; border-radius: 5px; font-family: monospace; word-break: break-all; margin: 15px 0; }
+                </style>
+            </head>
+            <body>
+                <div class='container'>
+                    <div class='content'>
+                        <h2>Hello,</h2>
+                        <p>We received a request to reset your password for your AI Revenue Generator account.</p>
+                        
+                        <p><strong>Click the button below to reset your password:</strong></p>
+                        
+                        <div style='text-align: center;'>
+                            <a href='{$resetLink}' class='button'>Reset Password</a>
+                        </div>
+                        
+                        <p>Or copy and paste this link into your browser:</p>
+                        <div class='code-box'>{$resetLink}</div>
+                        
+                        <p><strong>This link will expire in 1 hour.</strong></p>
+                        
+                        <p>If you didn't request a password reset, please ignore this email or contact support if you have concerns.</p>
+                    </div>
+                </div>
+            </body>
+            </html>";
+            $textBody = "Password Reset Request\n\n";
+            $textBody .= "Hello,\n\n";
+            $textBody .= "We received a request to reset your password for your AI Revenue Generator account.\n\n";
+            $textBody .= "Click the link below to reset your password:\n";
+            $textBody .= $resetLink . "\n\n";
+            $textBody .= "This link will expire in 1 hour.\n\n";
+            $textBody .= "If you didn't request a password reset, please ignore this email.\n\n";
+            $textBody .= "Best regards,\n";
+            $textBody .= "The AI Revenue Generator Team";
+
+            $mailer = new \App\core\Mailer();
+            return $mailer->send($email, $subject, $body);
+        } catch (Exception $e) {
+            error_log("Failed to send password reset email: " . $e->getMessage());
+            return false;
+        }
+    }
 }

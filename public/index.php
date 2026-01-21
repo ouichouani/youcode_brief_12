@@ -36,6 +36,7 @@ $router->post('/register',[AuthController::class , "register"]);
 $router->get('/logout',[AuthController::class , "logout"]);
 $router->get('/forgot-password',[AuthController::class , "showForgotPassword"]);
 $router->post('/forgot-password',[AuthController::class , "forgotPassword"]);
+$router->get('/reset-password/{token}', [AuthController::class, 'showResetPassword']);
 $router->post('/reset-password', [AuthController::class, "resetPassword"]);
 
 // ha kifach tst3mlo router 

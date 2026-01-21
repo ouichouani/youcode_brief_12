@@ -154,3 +154,4 @@ CREATE TABLE likes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+select * from users;
