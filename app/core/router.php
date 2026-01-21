@@ -1,8 +1,8 @@
 <?php
 
-namespace app\core;
+namespace App\core;
 
-use app\core\Request;
+use App\core\Request;
 
 class Router
 {
@@ -16,7 +16,7 @@ class Router
 
     public function __construct()
     {
-        $this->request = new request();
+        $this->request = new Request();
     }
 
     public function get(string $path, $callback)
