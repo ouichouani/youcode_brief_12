@@ -104,10 +104,11 @@ CREATE TABLE question (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+
 CREATE TABLE answers (
     id SERIAL PRIMARY KEY,
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
-    question_id BIGINT REFERENCES question (id) ON DELETE CASCADE,
+    question_id BIGINT REFERENCES questions (id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -156,17 +157,14 @@ CREATE TABLE likes (
 );
 
 --ali's sql 
-CREATE TABLE IF NOT EXISTS questions (
-    id SERIAL PRIMARY KEY,
-    question_text TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+
 
 -- User responses table
+-- drop table user_responses;
 CREATE TABLE IF NOT EXISTS user_responses (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
-    question_id INTEGER REFERENCES questions (id),
+    question_id INTEGER REFERENCES question (id),
     response_text TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -180,7 +178,7 @@ CREATE TABLE IF NOT EXISTS roadmaps (
 );
 
 -- Initial questions
-INSERT INTO questions (question_text) VALUES
+INSERT INTO question (CONTENT) VALUES
 ('What''s your age?'),
 ('What''s your main goal?'),
 ('Which best describes you?'),

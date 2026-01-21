@@ -1,3 +1,9 @@
+
+<?php
+
+echo "test";
+?>
+
 <div
     class="min-h-screen bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-950 to-slate-950">
     <div class="max-w-3xl mx-auto">

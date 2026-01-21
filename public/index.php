@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
+
 use App\core\Router ;
 use App\core\Database;
 // use app\controller\
@@ -10,7 +11,11 @@ use App\controllers\AuthController;
 session_start();
 
 $db = Database::getInstance();
+// phpinfo();
+// echo "hello world";
 $db->getConnection();
+
+$router = new Router();
 
 // $router->dispatch();
 // use App\core\Database;
@@ -24,9 +29,8 @@ $db->getConnection();
 //     echo "hello world";echo "hello world";
 
 
-$router = new Router();
 
-// $router->get('/' , "dashboard/dashboard");
+$router->get('/' , "dashboard/dashboard");
 
 $router->get('/', [AuthController::class , "showLogin"]);
 $router->get('/login', [AuthController::class , "showLogin"]);
@@ -37,7 +41,7 @@ $router->get('/logout',[AuthController::class , "logout"]);
 $router->get('/forgot-password',[AuthController::class , "showForgotPassword"]);
 $router->post('/forgot-password',[AuthController::class , "forgotPassword"]);
 
-// ha kifach tst3mlo router 
+// // ha kifach tst3mlo router 
 // $router->get( path , [classname::class , 'method' ]) ;
 // $router->get( path , func(){ ... }) ;
 
