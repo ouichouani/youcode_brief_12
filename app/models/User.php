@@ -6,7 +6,7 @@ class User {
     
     public static function create(array $data): bool {
         $connection = Database::getInstance()->getConnection();
-        $stmt = $connection->prepare("INSERT INTO users (fullname, email, password) VALUES (?, ?, ?)");
+        $stmt = $connection->prepare("INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)");
         return $stmt->execute([$data['fullname'], $data['email'], $data['password']]);
     }
     
@@ -44,27 +44,34 @@ class User {
     public static function updatePassword(int $userId, string $newPassword): bool {
         $connection = Database::getInstance()->getConnection();
         $hashedPassword = self::hashPassword($newPassword);
-        $stmt = $connection->prepare("UPDATE users SET password = ? WHERE id = ?");
+        $stmt = $connection->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
         return $stmt->execute([$hashedPassword, $userId]);
     }
 
     public static function createPasswordResetToken(string $email, string $token, string $expiresAt): bool {
         $connection = Database::getInstance()->getConnection();
-        $stmt = $connection->prepare("INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)");
-        return $stmt->execute([$email, $token, $expiresAt]);
+        $stmt = $connection->prepare("UPDATE users SET reset_token = ?, reset_token_expires_at = ? WHERE email = ?");
+        return $stmt->execute([$token, $expiresAt, $email]);
     }
 
     public static function findValidToken(string $token): ?array {
         $connection = Database::getInstance()->getConnection();
-        $stmt = $connection->prepare("SELECT * FROM password_resets WHERE token = ? AND expires_at > NOW()");
+        $stmt = $connection->prepare("SELECT * FROM users WHERE reset_token = ? AND reset_token_expires_at > NOW()");
         $stmt->execute([$token]);
         return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
     public static function deleteToken(string $token): bool {
         $connection = Database::getInstance()->getConnection();
-        $stmt = $connection->prepare("DELETE FROM password_resets WHERE token = ?");
+        $stmt = $connection->prepare("UPDATE users SET reset_token = NULL, reset_token_expires_at = NULL WHERE reset_token = ?");
         return $stmt->execute([$token]);
+    }
+
+    public static function resetPasswordWithToken(string $token, string $newPassword): bool {
+        $connection = Database::getInstance()->getConnection();
+        $hashedPassword = self::hashPassword($newPassword);
+        $stmt = $connection->prepare("UPDATE users SET password_hash = ?, reset_token = NULL, reset_token_expires_at = NULL WHERE reset_token = ? AND reset_token_expires_at > NOW()");
+        return $stmt->execute([$hashedPassword, $token]);
     }
 }
 ?>

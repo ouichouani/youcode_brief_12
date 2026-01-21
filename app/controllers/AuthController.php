@@ -100,7 +100,7 @@ class AuthController extends Controller{
             exit;
         }
         $user = User::findByEmail($email);
-        if ($user && User::validatePassword($password, $user['password'])) {
+        if ($user && User::validatePassword($password, $user['password_hash'])) {
             $this->startUserSession($user);
             header('Location: /dashboard');
             exit;
@@ -114,7 +114,7 @@ class AuthController extends Controller{
     private function startUserSession(array $user): void {
         session_start();
         $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_fullname'] = $user['fullname'];
+        $_SESSION['user_fullname'] = $user['name'];
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['logged_in'] = true;
     }
@@ -150,9 +150,106 @@ class AuthController extends Controller{
     }
 
     public function forgotPassword(){
-        session_start();
-        $_SESSION['success'] = "Password reset instructions have been sent to your email.";
-        header('Location: /login');
-        exit;
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /forgot-password');
+            exit;
+        }
+
+        $email = htmlspecialchars(trim($_POST['email'] ?? ''));
+        
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->storeErrorMessage("Please provide a valid email address");
+            header('Location: /forgot-password');
+            exit;
+        }
+        
+        if (!User::emailExists($email)) {
+            $this->storeErrorMessage("No account found with this email address");
+            header('Location: /forgot-password');
+            exit;
+        }
+
+        $token = bin2hex(random_bytes(32));
+        $expiresAt = date('Y-m-d H:i:s', strtotime('+1 hour'));
+        
+        if (User::createPasswordResetToken($email, $token, $expiresAt)) {
+            $this->sendPasswordResetEmail($email, $token);
+            
+            $this->storeSuccessMessage("Password reset instructions have been sent to your email.");
+            header('Location: /login');
+            exit;
+        } else {
+            $this->storeErrorMessage("Failed to process your request. Please try again.");
+            header('Location: /forgot-password');
+            exit;
+        }
     }
+
+    public function showResetPassword($token = null) {
+        if (!$token) {
+            header('Location: /forgot-password');
+            exit;
+        }
+
+        $user = User::findValidToken($token);
+        
+        if (!$user) {
+            $this->storeErrorMessage("Invalid or expired reset token");
+            header('Location: /forgot-password');
+            exit;
+        }
+
+        $this->view('user/reset-password', ['token' => $token]);
+    }
+
+    public function resetPassword() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /forgot-password');
+            exit;
+        }
+        
+        $token = $_POST['token'] ?? '';
+        $password = $_POST['password'] ?? '';
+        $confirm_password = $_POST['confirm_password'] ?? '';
+        
+        if (empty($token)) {
+            $this->storeErrorMessage("Invalid reset token");
+            header('Location: /forgot-password');
+            exit;
+        }
+
+        $errors = [];
+        if (strlen($password) < 8) {
+            $errors[] = "Password must be at least 8 characters";
+        }
+        if (!preg_match('/[A-Z]/', $password)) {
+            $errors[] = "Password must contain at least one uppercase letter";
+        }
+        if (!preg_match('/[a-z]/', $password)) {
+            $errors[] = "Password must contain at least one lowercase letter";
+        }
+        if (!preg_match('/[0-9]/', $password)) {
+            $errors[] = "Password must contain at least one number";
+        }
+        if ($password !== $confirm_password) {
+            $errors[] = "Passwords do not match";
+        }
+        
+        if (!empty($errors)) {
+            $this->storeValidationErrors($errors);
+            header('Location: /reset-password/' . $token);
+            exit;
+        }
+
+        if (User::resetPasswordWithToken($token, $password)) {
+            $this->storeSuccessMessage("Password has been reset successfully. Please login.");
+            header('Location: /login');
+            exit;
+        } else {
+            $this->storeErrorMessage("Invalid or expired reset token");
+            header('Location: /forgot-password');
+            exit;
+        }
+    }
+    
 }
