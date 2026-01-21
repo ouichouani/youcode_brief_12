@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class aiService
+class AI
 {
     private string $api_key;
 
@@ -41,7 +41,7 @@ class aiService
     }
 
 
-    public function callApi($model,$messages)
+    public function callApi($model, $messages)
     {
         $url = "https://router.huggingface.co/v1/chat/completions";
 
@@ -61,5 +61,23 @@ class aiService
             'Authorization: Bearer ' . $this->api_key
         ]);
         return $ch;
+    }
+    public function generateQuestions(): array
+    {
+        $prompt = "Generate 5 questions to assess a user's learning goals, level, and availability.";
+
+        return $this->callAI($prompt);
+    }
+
+    public function generateRoadmap(array $answers): string
+    {
+        $prompt = "Create a learning roadmap based on these answers: " . json_encode($answers);
+
+        return $this->callAI($prompt);
+    }
+
+    public function callAi(string $prompt): string|array
+    {
+        return [];
     }
 }
