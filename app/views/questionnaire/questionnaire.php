@@ -1,4 +1,3 @@
-
 <div
     class="min-h-screen bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-950 to-slate-950">
     <div class="max-w-3xl mx-auto">
@@ -10,8 +9,9 @@
                 Répondez à quelques questions pour que notre IA puisse générer votre roadmap personnalisée.
             </p>
         </div>
-        
-        <form action="/evolveai/questionnaire" method="POST" class="space-y-8">
+
+
+        <form action="/questionnaire" method="POST" class="space-y-8">
             <?php if (empty($questions)): ?>
                 <div class="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 text-center">
                     <p class="text-slate-400 italic">Chargement des questions...</p>

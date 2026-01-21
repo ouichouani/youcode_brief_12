@@ -31,7 +31,7 @@ class QuestionnaireController
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['responses'])) {
             $responses = $_POST['responses'];
             if ($this->model->saveResponse($userId, $responses)) {
-                header("Location: /EvolveAI/roadmap/generate");
+                header("Location: /roadmap/generate");
                 exit;
             }
         }
@@ -51,7 +51,7 @@ class QuestionnaireController
         $roadmapModel = new Roadmap();
         $roadmapModel->saveRoadmap($userId, $roadmapContent);
 
-        header("Location: /EvolveAI/roadmap/show");
+        header("Location: /roadmap/show");
         exit;
     }
 
