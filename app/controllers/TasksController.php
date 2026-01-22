@@ -12,6 +12,7 @@ class tasksController extends Controller {
 
     public function getAll() {
         $tasks = tasks::getAll();
+        $this->view('tasks/tasks', ['tasks' => $tasks]); 
     }
 
     public function markAsDone($id) {
@@ -19,6 +20,7 @@ class tasksController extends Controller {
     if($_SERVER['REQUEST_METHOD']==='POST'){
         $id=$POST['id'];
         $tasks = tasks::markAsDone($id);
+        $this->redirect('/tasks'); 
     }
        
     }

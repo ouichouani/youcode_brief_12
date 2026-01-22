@@ -1,4 +1,4 @@
--- Active: 1768299577181@@127.0.0.1@5432@EvolveAI
+-- Active: 1768301616498@@127.0.0.1@5432@youcode_brief_12
 /*
 offfff
 
@@ -36,7 +36,7 @@ CREATE TYPE market_source_enum AS ENUM ('fiverr', 'upwork', 'saas', 'other');
 
 -- TABLE CREATION
 
-CREATE TABLE "users" (
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -108,7 +108,7 @@ CREATE TABLE question (
 CREATE TABLE answers (
     id SERIAL PRIMARY KEY,
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
-    question_id BIGINT REFERENCES questions (id) ON DELETE CASCADE,
+    question_id BIGINT REFERENCES question (id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -135,9 +135,9 @@ CREATE TABLE skills (
 CREATE TABLE posts (
     id SERIAL PRIMARY KEY,
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
+    -- title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
-    type post_type_enum NOT NULL,
+    -- type post_type_enum NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -201,4 +201,4 @@ INSERT INTO question (CONTENT) VALUES
 ('What type of lesson format do you prefer?');
 
 select * from users;
-select * from questions;
+select * from question;
