@@ -1,7 +1,8 @@
 <?php
+namespace App\Controllers;
 
 
-use App\models\Roadmap;
+use App\Models\Roadmap;
     class RoadmapController{
         private Roadmap $rdmp;
 

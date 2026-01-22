@@ -1,16 +1,16 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use App\core\Router ;
-use App\core\Database;
+use App\Core\Router ;
+use App\Core\Database;
 // use app\controller\
 
-use App\controllers\AuthController;
+use App\Controllers\AuthController;
 
 session_start();
 
-$db = Database::getInstance();
-$db->getConnection();
+// $db = Database::getInstance();
+// $db->getConnection();
 
 // $router->dispatch();
 // use App\core\Database;

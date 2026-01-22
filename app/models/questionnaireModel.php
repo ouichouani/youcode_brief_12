@@ -3,7 +3,7 @@
 
 namespace App\Models;
 
-use App\core\Database;
+use App\Core\Database;
 use Dotenv\Dotenv;
 use PDO;
 
