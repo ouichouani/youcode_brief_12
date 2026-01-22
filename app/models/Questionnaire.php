@@ -47,7 +47,7 @@ class Questionnaire
 
     public function getResponses($userId): array
     {
-        $request = "SELECT r.*, q.question_text 
+        $request = "SELECT r.*, q.content 
                     FROM {$this->responsesTable} r 
                     JOIN {$this->questionsTable} q ON r.question_id = q.id 
                     WHERE r.user_id = ?";

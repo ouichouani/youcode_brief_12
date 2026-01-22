@@ -58,8 +58,17 @@ class Router
         $path = parse_url($path, PHP_URL_PATH);
 
         $base = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+
+        // Fix for when index.php is in public/ but we access from root
+        if (substr($base, -7) === '/public') {
+            $base = substr($base, 0, -7);
+        }
+
         if ($base !== '/') {
-            $path = substr($path, strlen($base));
+            // Ensure we don't strip if it doesn't match to avoid errors
+            if (strpos($path, $base) === 0) {
+                $path = substr($path, strlen($base));
+            }
         }
 
         $path = '/' . trim($path, '/');
@@ -78,14 +87,14 @@ class Router
     public function renderLayout()
     {
         ob_start();
-        require dirname(__dir__) . '/views/layout/layout.php';
+        require dirname(__DIR__) . '/views/layout/layout.php';
         return ob_get_clean();
     }
 
     public function renderOnlyView($view)
     {
         ob_start();
-        require dirname(__dir__) . "/views/$view.php";
+        require dirname(__DIR__) . "/views/$view.php";
         return ob_get_clean();
     }
 }
