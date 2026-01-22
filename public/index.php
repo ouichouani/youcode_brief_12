@@ -1,16 +1,16 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use App\Core\Router ;
-use App\Core\Database;
+use App\core\Router ;
+use App\core\Database;
 // use app\controller\
 
-use App\Controllers\AuthController;
+use App\controllers\AuthController;
 
 session_start();
 
-// $db = Database::getInstance();
-// $db->getConnection();
+$db = Database::getInstance();
+$db->getConnection();
 
 // $router->dispatch();
 // use App\core\Database;
@@ -26,7 +26,7 @@ session_start();
 
 $router = new Router() ;
 
-// $router->get('/' , "dashboard/dashboard");
+$router->get('/' , "dashboard/dashboard");
 
 $router->get('/', [AuthController::class , "showLogin"]);
 $router->get('/login', [AuthController::class , "showLogin"]);
