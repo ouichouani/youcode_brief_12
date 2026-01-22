@@ -3,7 +3,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 define('BASE_URL', $_SERVER['SCRIPT_NAME']);
 $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
-if ($scriptDir === '/') {
+if ($scriptDir === '/' ) {
     define('APP_ROOT', '');
 } else {
 
