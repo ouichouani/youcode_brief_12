@@ -211,7 +211,8 @@ class AuthController extends Controller
         }
     }
 
-    public function showResetPassword($token = null) {
+    public function showResetPassword() {
+        $token = $_GET['token'] ?? null;
         if (!$token) {
             header('Location: /forgot-password');
             exit;
@@ -263,7 +264,7 @@ class AuthController extends Controller
         
         if (!empty($errors)) {
             $this->storeValidationErrors($errors);
-            header('Location: /reset-password/' . $token);
+            header('Location: /reset-password?token=' . $token);
             exit;
         }
 
@@ -279,7 +280,7 @@ class AuthController extends Controller
     }
     private function sendPasswordResetEmail(string $email, string $token): bool {
         try {
-            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . "/reset-password/" . $token;
+            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . "/reset-password?token=" . $token;
             $subject = "Password Reset Request - AI Revenue Generator";
             $body = "
             <!DOCTYPE html>

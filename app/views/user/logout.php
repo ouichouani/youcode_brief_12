@@ -1,4 +1,4 @@
-<body class="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen flex items-center justify-center">
+<section class="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen flex items-center justify-center">
     <div class="max-w-md w-full mx-4">
         <div class="bg-white rounded-2xl shadow-xl p-8 text-center">
             <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -36,4 +36,4 @@
             window.location.href = '/login';
         }, 2000);
     </script>
-</body>
+</section>

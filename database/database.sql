@@ -1,4 +1,4 @@
--- Active: 1768245236744@@127.0.0.1@5432@EvolveAi
+-- Active: 1768299577181@@127.0.0.1@5432@EvolveAI
 /*
 offfff
 
@@ -199,7 +199,6 @@ INSERT INTO question (CONTENT) VALUES
 ('How well can you stay focused?'),
 ('Which device will you use for learning?'),
 ('What type of lesson format do you prefer?');
-
 
 select * from users;
 select * from questions;
