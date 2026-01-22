@@ -37,7 +37,7 @@ $router->get('/signup', [QuestionnaireController::class, "askQuest"]);
 $router->post('/questionnaire', [QuestionnaireController::class, "captureResponse"]);
 
 // Signup alias (linked in layout)
-$router->get('/signup', [AuthController::class, "showRegister"]);
+// $router->get('/signup', [AuthController::class, "showRegister"]);
 
 // Roadmap routes
 // $router->get('/roadmap/generate', [QuestionnaireController::class, "generateRoadmap"]);

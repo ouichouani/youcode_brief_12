@@ -5,13 +5,17 @@ namespace App\controllers;
 use App\core\Controller;
 use App\models\User;
 
-class AuthController extends Controller{
-    
-    public function showRegister(){
+class AuthController extends Controller
+{
+
+    public function showRegister()
+    {
         $this->view('user/register');
     }
 
-    public function register(){
+
+    public function register()
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /register');
             exit;
@@ -29,9 +33,16 @@ class AuthController extends Controller{
             header('Location: /register');
             exit;
         }
-        
+
         if ($this->processRegistration($fullname, $email, $password)) {
-            $this->storeSuccessMessage("Registration successful! Please login.");
+            $user = User::findByEmail($email);
+            if ($user) {
+                $this->startUserSession($user);
+                $this->storeSuccessMessage("Registration successful! Please complete the questionnaire.");
+                header('Location: /questionnaire');
+                exit;
+            }
+            // Fallback if user lookup fails (unlikely)
             header('Location: /login');
             exit;
         } else {
@@ -41,7 +52,8 @@ class AuthController extends Controller{
         }
     }
 
-    private function validateRegistration(string $fullname, string $email, string $password, string $confirm_password): array {
+    private function validateRegistration(string $fullname, string $email, string $password, string $confirm_password): array
+    {
         $errors = [];
 
         if (empty($fullname) || strlen($fullname) < 2) {
@@ -75,17 +87,20 @@ class AuthController extends Controller{
         return $errors;
     }
 
-    private function processRegistration(string $fullname, string $email, string $password): bool {
+    private function processRegistration(string $fullname, string $email, string $password): bool
+    {
         $hashed_password = User::hashPassword($password);
-        
-        return User::create(['fullname' => $fullname,'email' => $email,'password' => $hashed_password]);
+
+        return User::create(['fullname' => $fullname, 'email' => $email, 'password' => $hashed_password]);
     }
 
-    public function showLogin(){
+    public function showLogin()
+    {
         $this->view('user/login');
     }
 
-    public function login(){
+    public function login()
+    {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /login');
             exit;
@@ -111,46 +126,59 @@ class AuthController extends Controller{
         }
     }
 
-    private function startUserSession(array $user): void {
-        session_start();
+    private function startUserSession(array $user): void
+    {
+        if (session_status() === PHP_SESSION_NONE)
+            session_start();
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_fullname'] = $user['fullname'];
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['logged_in'] = true;
     }
 
-    private function storeValidationErrors(array $errors, array $oldData = []): void {
-        session_start();
+    private function storeValidationErrors(array $errors, array $oldData = []): void
+    {
+        if (session_status() === PHP_SESSION_NONE)
+            session_start();
         $_SESSION['errors'] = $errors;
         if (!empty($oldData)) {
             $_SESSION['old'] = $oldData;
         }
     }
 
-     private function storeErrorMessage(string $message): void {
-        session_start();
+    private function storeErrorMessage(string $message): void
+    {
+        if (session_status() === PHP_SESSION_NONE)
+            session_start();
         $_SESSION['errors'] = [$message];
     }
 
-    private function storeSuccessMessage(string $message): void {
-        session_start();
+    private function storeSuccessMessage(string $message): void
+    {
+        if (session_status() === PHP_SESSION_NONE)
+            session_start();
         $_SESSION['success'] = $message;
     }
 
 
-    public function logout(){
-        session_start();
+    public function logout()
+    {
+        if (session_status() === PHP_SESSION_NONE)
+            session_start();
         session_destroy();
         header('Location: /login');
         exit;
     }
 
-    public function showForgotPassword(){
+    public function showForgotPassword()
+    {
         $this->view('user/forgot-password');
     }
 
-    public function forgotPassword(){
-        session_start();
+    public function forgotPassword()
+    {
+        if (session_status() === PHP_SESSION_NONE)
+            session_start();
         $_SESSION['success'] = "Password reset instructions have been sent to your email.";
         header('Location: /login');
         exit;
