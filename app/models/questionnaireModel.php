@@ -5,6 +5,7 @@ namespace App\Models;
 
 use App\Core\Database;
 use Dotenv\Dotenv;
+use App\Models\AI;
 use PDO;
 
 Dotenv::createImmutable(__DIR__ . '.env')->load();
@@ -38,6 +39,9 @@ class Questionnaire
     }
     public function response(string $msg){
         $this->ai->generateResponse($msg);
+    }
+    public function generateRoadmapForUser(int $userId){
+
     }
 }
 

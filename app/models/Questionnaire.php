@@ -20,7 +20,7 @@ class Questionnaire
         $this->ai = new AI();
     }
 
-    public function getAllQuest(): array
+    public function getAllQuest(): array | object
     {
         $request = "SELECT * FROM {$this->questionsTable} ORDER BY id ASC";
         $stmt = $this->db->prepare($request);
