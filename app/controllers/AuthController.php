@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Models\User;
+use App\Core\Mailer;
+use Exception;
 
 class AuthController extends Controller
 {
@@ -17,7 +19,8 @@ class AuthController extends Controller
     public function register()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /register');
+            // header('Location: /register');
+            $this->view("user/register");
             exit;
         }
 
@@ -30,7 +33,9 @@ class AuthController extends Controller
 
         if (!empty($errors)) {
             $this->storeValidationErrors($errors, ['fullname' => $fullname, 'email' => $email]);
-            header('Location: /register');
+            // header('Location: /register');
+            $this->view("user/register");
+
             exit;
         }
 
@@ -39,15 +44,20 @@ class AuthController extends Controller
             if ($user) {
                 $this->startUserSession($user);
                 $this->storeSuccessMessage("Registration successful! Please complete the questionnaire.");
-                header('Location: /questionnaire');
+                header('Location: ' . APP_ROOT . '/questionnaire');
                 exit;
             }
             // Fallback if user lookup fails (unlikely)
-            header('Location: /login');
+            //                         $this->view("user/login") ;
+
+            $this->view("user/login");
+
             exit;
         } else {
             $this->storeErrorMessage("Registration failed. Please try again.");
-            header('Location: /register');
+            // header('Location: /register');
+            $this->view("user/register");
+
             exit;
         }
     }
@@ -102,7 +112,10 @@ class AuthController extends Controller
     public function login()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /login');
+            $this->view("user/login");
+
+            $this->view("user/login");
+
             exit;
         }
 
@@ -111,17 +124,19 @@ class AuthController extends Controller
 
         if (empty($email) || empty($password)) {
             $this->storeErrorMessage("Email and password are required");
-            header('Location: /login');
+            $this->view("user/login");
+
             exit;
         }
         $user = User::findByEmail($email);
         if ($user && User::validatePassword($password, $user['password_hash'])) {
             $this->startUserSession($user);
-            header('Location: /dashboard');
+            header('Location: ' . APP_ROOT . '/dashboard');
             exit;
         } else {
             $this->storeErrorMessage("Invalid email or password");
-            header('Location: /login');
+            $this->view("user/login");
+
             exit;
         }
     }
@@ -166,7 +181,7 @@ class AuthController extends Controller
         if (session_status() === PHP_SESSION_NONE)
             session_start();
         session_destroy();
-        header('Location: /login');
+        header('Location: ' . APP_ROOT . '/login');
         exit;
     }
 
@@ -327,7 +342,7 @@ class AuthController extends Controller
             $textBody .= "Best regards,\n";
             $textBody .= "The AI Revenue Generator Team";
 
-            $mailer = new \App\core\Mailer();
+            $mailer = new Mailer();
             return $mailer->send($email, $subject, $body);
         } catch (Exception $e) {
             error_log("Failed to send password reset email: " . $e->getMessage());
