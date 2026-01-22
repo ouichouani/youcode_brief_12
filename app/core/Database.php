@@ -19,8 +19,6 @@ class Database
         $config = require __DIR__ . '/../../config/connexion.php';
         try {
 
-
-        
             $dsn = "pgsql:host={$config['host']};dbname={$config['dbname']}";
             self::$conn = new PDO($dsn, $config['username'], $config['password']);
 
