@@ -53,7 +53,8 @@ CREATE TABLE roadmap (
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
     step INT NOT NULL,
     content TEXT NOT NULL,
-    skills TEXT [], -- array of skill names or tags
+    --skills TEXT [], -- array of skill names or tags
+    -- skills TEXT DEFAULT [(SELECT name from skills where roadmap_id = id )]
     duration VARCHAR(50),
     passed BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -63,7 +64,9 @@ CREATE TABLE roadmap (
 CREATE TABLE plan (
     id SERIAL PRIMARY KEY,
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
-    roadmap_id BIGINT REFERENCES roadmap (id) ON DELETE CASCADE,
+    -- roadmap_id BIGINT REFERENCES roadmap (id) ON DELETE CASCADE,
+
+    ---
     content TEXT NOT NULL,
     completion_percentage INT DEFAULT 0 CHECK (
         completion_percentage BETWEEN 0 AND 100
@@ -124,7 +127,8 @@ CREATE TABLE opportunities (
 
 CREATE TABLE skills (
     id SERIAL PRIMARY KEY,
-    user_id BIGINT REFERENCES users (id) ON DELETE SET NULL ,
+    user_id INT REFERENCES users (id) ON DELETE CASCADE ,
+    roadmap_id INT REFERENCES roadmap (id) ON DELETE SET NULL,
     name VARCHAR(150) NOT NULL,
     description TEXT,
     category skill_category_enum DEFAULT 'other'
