@@ -77,9 +77,9 @@ class Router
     }
 
 
-    public function renderView($view)
+    public function renderView($view, $data = [])
     {
-        $content = $this->renderOnlyView($view);
+        $content = $this->renderOnlyView($view, $data);
         $layout = $this->renderLayout();
         return str_replace('{{content}}', $content, $layout);
     }
@@ -91,8 +91,9 @@ class Router
         return ob_get_clean();
     }
 
-    public function renderOnlyView($view)
+    public function renderOnlyView($view, $data = [])
     {
+        extract($data);
         ob_start();
         require dirname(__DIR__) . "/views/$view.php";
         return ob_get_clean();

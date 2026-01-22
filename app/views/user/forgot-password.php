@@ -56,7 +56,7 @@
                 </div>
 
                 <div class="text-center">
-                    <a href="<?= APP_ROOT ?>/login" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
+                    <a href="<?=  APP_ROOT ?>/login" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
                         <i class="fas fa-arrow-left mr-2"></i>
                         Back to Login
                     </a>
