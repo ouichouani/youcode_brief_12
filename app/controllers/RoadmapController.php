@@ -1,10 +1,10 @@
 <?php
+namespace App\Controllers;
 
-namespace App\controllers;
+// namespace App\controllers;
 
-use App\core\Controller;
-use App\models\Roadmap;
-
+use App\Models\Roadmap;
+use App\Core\Controller;
 class RoadmapController extends Controller
 {
     private Roadmap $rdmp;

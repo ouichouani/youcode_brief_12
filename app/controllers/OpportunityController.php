@@ -1,10 +1,10 @@
 <?php
 
-namespace App\controllers;
+namespace App\Controllers;
 
-use App\core\Controller;
-use App\models\Opportunity;
-use App\models\User;
+use App\Core\Controller;
+use App\Models\Opportunity;
+use App\Models\User;
 
 
 
