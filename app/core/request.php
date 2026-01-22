@@ -1,9 +1,9 @@
 <?php
 
 
-namespace app\core ;
+namespace App\Core;
 
-class request {
+class Request {
 
     public function getMethod(){
 
@@ -14,7 +14,7 @@ class request {
     public function getPath(){
 
         $path = $_SERVER['REQUEST_URI'] ; 
-        $postion = strpos('?' , $path);
+        $postion = strpos($path, '?');
 
         if($postion === false){
             return $path ;

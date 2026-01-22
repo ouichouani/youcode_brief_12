@@ -1,9 +1,10 @@
 <?php
 
-namespace App\controllers;
+namespace App\Controllers;
 
 use App\Models\Questionnaire;
 use App\models\Roadmap;
+
 class QuestionnaireController
 {
     private Questionnaire $model;
@@ -30,7 +31,7 @@ class QuestionnaireController
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['responses'])) {
             $responses = $_POST['responses'];
             if ($this->model->saveResponse($userId, $responses)) {
-                header("Location: /EvolveAI/roadmap/generate");
+                header("Location: /roadmap/generate");
                 exit;
             }
         }
@@ -50,7 +51,7 @@ class QuestionnaireController
         $roadmapModel = new Roadmap();
         $roadmapModel->saveRoadmap($userId, $roadmapContent);
 
-        header("Location: /EvolveAI/roadmap/show");
+        header("Location: /roadmap/show");
         exit;
     }
 
@@ -58,11 +59,11 @@ class QuestionnaireController
     {
         extract($data);
         ob_start();
-        require "app/views/$view.php";
+        require dirname(__DIR__) . "/views/$view.php";
         $content = ob_get_clean();
 
         ob_start();
-        require "app/views/layout/layout.php";
+        require dirname(__DIR__) . "/views/layout/layout.php";
         $layout = ob_get_clean();
 
         echo str_replace('{{content}}', $content, $layout);

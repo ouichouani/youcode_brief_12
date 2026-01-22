@@ -3,66 +3,41 @@
 
 namespace App\Models;
 
-use App\core\Database;
+use App\Core\Database;
+use Dotenv\Dotenv;
 use PDO;
-use Exception;
 
+Dotenv::createImmutable(__DIR__ . '.env')->load();
 class Questionnaire
 {
-    private string $questionsTable = 'questions';
-    private string $responsesTable = 'user_responses';
+
+    private string $tableName = "questions";
     private PDO $db;
     private AI $ai;
-
     public function __construct()
     {
         $this->db = Database::getInstance()->getConnection();
-        $this->ai = new AI();
+        $this->ai = new AI($_ENV['HF_TOKEN']);
     }
 
-    public function getAllQuest(): array
-    {
-        $request = "SELECT * FROM {$this->questionsTable} ORDER BY id ASC";
-        $stmt = $this->db->prepare($request);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
 
-    public function saveResponse($userId, array $responses): bool
+    public function getAllQuest(): bool | array
     {
-        $this->db->beginTransaction();
-        try {
-            $stmt = $this->db->prepare("INSERT INTO {$this->responsesTable} (user_id, question_id, response_text) VALUES (?, ?, ?)");
-            foreach ($responses as $questionId => $responseText) {
-                $stmt->execute([$userId, (int) $questionId, $responseText]);
-            }
-            $this->db->commit();
-            return true;
-        } catch (Exception $e) {
-            $this->db->rollBack();
-            return false;
-
+        $request = "select * from ?";
+        $stmt =  $this->db->prepare($request);
+        if ($stmt->execute([$this->tableName])) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
         }
+        return false;
     }
-
-    public function getResponses($userId): array
+    public function saveResponse(array $data): bool
     {
-        $request = "SELECT r.*, q.question_text 
-                    FROM {$this->responsesTable} r 
-                    JOIN {$this->questionsTable} q ON r.question_id = q.id 
-                    WHERE r.user_id = ?";
-        $stmt = $this->db->prepare($request);
-        $stmt->execute([$userId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $request = "insert into ? values ?";
+        $stmt =  $this->db->prepare($request);
+        return $stmt->execute([$this->tableName, $data]);
     }
-
-    public function generateRoadmapForUser($userId): string
-    {
-        $responses = $this->getResponses($userId);
-        if (empty($responses)) {
-            return "No responses found for user.";
-        }
-        return $this->ai->generateRoadmap($responses);
+    public function response(string $msg){
+        $this->ai->generateResponse($msg);
     }
 }
 

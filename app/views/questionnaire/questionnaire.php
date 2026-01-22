@@ -10,7 +10,8 @@
             </p>
         </div>
 
-        <form action="/EvolveAI/questionnaire" method="POST" class="space-y-8">
+
+        <form action="/questionnaire" method="POST" class="space-y-8">
             <?php if (empty($questions)): ?>
                 <div class="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 text-center">
                     <p class="text-slate-400 italic">Chargement des questions...</p>
@@ -47,7 +48,7 @@
                             class="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-6 transition-all hover:border-indigo-500/50 group">
                             <label
                                 class="block text-lg font-medium text-white mb-3 group-hover:text-indigo-400 transition-colors">
-                                <?= htmlspecialchars($q['question_text']) ?>
+                                <?= htmlspecialchars($q['content']) ?>
                             </label>
                             <input type="text" name="responses[<?= $q['id'] ?>]" required
                                 class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"

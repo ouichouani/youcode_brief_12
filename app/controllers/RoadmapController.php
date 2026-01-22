@@ -1,10 +1,11 @@
 <?php
+namespace App\Controllers;
 
-namespace App\controllers;
+// namespace App\controllers;
 
-use App\models\Roadmap;
-
-class RoadmapController
+use App\Models\Roadmap;
+use App\Core\Controller;
+class RoadmapController extends Controller
 {
     private Roadmap $rdmp;
 
@@ -21,6 +22,7 @@ class RoadmapController
 
         $userId = $_SESSION['user_id'] ?? 1;
         $roadmap = $this->rdmp->getRoadmap($userId);
-        require "app/views/roadmap/show.php";
+
+        $this->view('roadmap/show', ['roadmap' => $roadmap]);
     }
 }
