@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
-<<<<<<< HEAD
 define('BASE_URL', '/');
 
 use App\core\Router;
@@ -18,18 +17,6 @@ use App\controllers\RoadmapController;
 
 $db = Database::getInstance();
 $db->getConnection();
-=======
-use App\Core\Router ;
-use App\Core\Database;
-// use app\controller\
-
-use App\Controllers\AuthController;
-
-session_start();
-
-// $db = Database::getInstance();
-// $db->getConnection();
->>>>>>> a7af57c990a4f56bcaf7760aacc50a80a34dbb02
 
 $router = new Router();
 

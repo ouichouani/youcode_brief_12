@@ -36,8 +36,8 @@ class Questionnaire
         $stmt =  $this->db->prepare($request);
         return $stmt->execute([$this->tableName, $data]);
     }
-    public function response(){
-        $this->ai->generateResponse();
+    public function response(string $msg){
+        $this->ai->generateResponse($msg);
     }
 }
 
