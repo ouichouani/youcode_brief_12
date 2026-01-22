@@ -17,7 +17,7 @@ class Questionnaire
     public function __construct()
     {
         $this->db = Database::getInstance()->getConnection();
-        $this->ai = new aiService($_ENV['HF_TOKEN']);
+        $this->ai = new AI($_ENV['HF_TOKEN']);
     }
 
 
@@ -36,8 +36,8 @@ class Questionnaire
         $stmt =  $this->db->prepare($request);
         return $stmt->execute([$this->tableName, $data]);
     }
-    public function response(){
-        $ai->generateResponse();
+    public function response(string $msg){
+        $this->ai->generateResponse($msg);
     }
 }
 

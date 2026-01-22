@@ -3,15 +3,18 @@ namespace App\Models;
 
 use App\Core\Database;
 
-class User {
-    
-    public static function create(array $data): bool {
+class User
+{
+
+    public static function create(array $data): bool
+    {
         $connection = Database::getInstance()->getConnection();
-        $stmt = $connection->prepare("INSERT INTO users (fullname, email, password) VALUES (?, ?, ?)");
+        $stmt = $connection->prepare("INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)");
         return $stmt->execute([$data['fullname'], $data['email'], $data['password']]);
     }
-    
-    public static function findByEmail(string $email): ?array {
+
+    public static function findByEmail(string $email): ?array
+    {
         $connection = Database::getInstance()->getConnection();
         $stmt = $connection->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->execute([$email]);
@@ -19,14 +22,16 @@ class User {
         return $result ?: null;
     }
 
-    public static function emailExists(string $email): bool {
+    public static function emailExists(string $email): bool
+    {
         $connection = Database::getInstance()->getConnection();
         $stmt = $connection->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
         $stmt->execute([$email]);
         return $stmt->fetchColumn() > 0;
     }
 
-    public static function findById(int $id): ?array {
+    public static function findById(int $id): ?array
+    {
         $connection = Database::getInstance()->getConnection();
         $stmt = $connection->prepare("SELECT * FROM users WHERE id = ?");
         $stmt->execute([$id]);
@@ -34,37 +39,43 @@ class User {
         return $result ?: null;
     }
 
-    public static function validatePassword(string $password, string $hashedPassword): bool {
+    public static function validatePassword(string $password, string $hashedPassword): bool
+    {
         return password_verify($password, $hashedPassword);
     }
 
-    public static function hashPassword(string $password): string {
+    public static function hashPassword(string $password): string
+    {
         return password_hash($password, PASSWORD_DEFAULT);
     }
 
-    public static function updatePassword(int $userId, string $newPassword): bool {
+    public static function updatePassword(int $userId, string $newPassword): bool
+    {
         $connection = Database::getInstance()->getConnection();
         $hashedPassword = self::hashPassword($newPassword);
-        $stmt = $connection->prepare("UPDATE users SET password = ? WHERE id = ?");
+        $stmt = $connection->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
         return $stmt->execute([$hashedPassword, $userId]);
     }
 
-    public static function createPasswordResetToken(string $email, string $token, string $expiresAt): bool {
+    public static function createPasswordResetToken(string $email, string $token, string $expiresAt): bool
+    {
         $connection = Database::getInstance()->getConnection();
-        $stmt = $connection->prepare("INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)");
-        return $stmt->execute([$email, $token, $expiresAt]);
+        $stmt = $connection->prepare("UPDATE users SET reset_token = ?, reset_token_expires_at = ? WHERE email = ?");
+        return $stmt->execute([$token, $expiresAt, $email]);
     }
 
-    public static function findValidToken(string $token): ?array {
+    public static function findValidToken(string $token): ?array
+    {
         $connection = Database::getInstance()->getConnection();
-        $stmt = $connection->prepare("SELECT * FROM password_resets WHERE token = ? AND expires_at > NOW()");
+        $stmt = $connection->prepare("SELECT * FROM users WHERE reset_token = ? AND reset_token_expires_at > NOW()");
         $stmt->execute([$token]);
         return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
-    public static function deleteToken(string $token): bool {
+    public static function deleteToken(string $token): bool
+    {
         $connection = Database::getInstance()->getConnection();
-        $stmt = $connection->prepare("DELETE FROM password_resets WHERE token = ?");
+        $stmt = $connection->prepare("UPDATE users SET reset_token = NULL, reset_token_expires_at = NULL WHERE reset_token = ?");
         return $stmt->execute([$token]);
     }
 
@@ -78,6 +89,13 @@ class User {
     {
         if(isset($_SESSION['user']) && $_SESSION['user']['id']) return true ;
         return false ;
+    }
+    
+    public static function resetPasswordWithToken(string $token, string $newPassword): bool {
+        $connection = Database::getInstance()->getConnection();
+        $hashedPassword = self::hashPassword($newPassword);
+        $stmt = $connection->prepare("UPDATE users SET password_hash = ?, reset_token = NULL, reset_token_expires_at = NULL WHERE reset_token = ? AND reset_token_expires_at > NOW()");
+        return $stmt->execute([$hashedPassword, $token]);
     }
 }
 ?>

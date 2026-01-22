@@ -1,3 +1,4 @@
+-- Active: 1768314244387@@localhost@5432@youcode_brief_12
 /*
 offfff
 
@@ -18,9 +19,9 @@ offfff
 
 
 -- DATABASE CREATION 
-CREATE DATABASE youcode_brief_12 ;
- youcode_brief_12 ;
+DROP DATABASE youcode_brief_12 ;
 
+CREATE DATABASE youcode_brief_12 ;
 
 -- ENUM CREATION
 CREATE TYPE task_status_enum AS ENUM ('pending', 'completed', 'blocked');
@@ -64,9 +65,7 @@ CREATE TABLE roadmap (
 CREATE TABLE plan (
     id SERIAL PRIMARY KEY,
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
-    -- roadmap_id BIGINT REFERENCES roadmap (id) ON DELETE CASCADE,
-
-    ---
+    roadmap_id BIGINT REFERENCES roadmap (id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     completion_percentage INT DEFAULT 0 CHECK (
         completion_percentage BETWEEN 0 AND 100
@@ -105,6 +104,7 @@ CREATE TABLE question (
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 CREATE TABLE answers (
     id SERIAL PRIMARY KEY,
@@ -157,4 +157,52 @@ CREATE TABLE likes (
     post_id BIGINT REFERENCES posts (id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+--ali's sql 
+
+
+-- User responses table
+-- drop table user_responses;
+CREATE TABLE IF NOT EXISTS user_responses (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    question_id INTEGER REFERENCES question (id),
+    response_text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Roadmaps table
+CREATE TABLE IF NOT EXISTS roadmaps (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Initial questions
+INSERT INTO question (CONTENT) VALUES
+('What''s your age?'),
+('What''s your main goal?'),
+('Which best describes you?'),
+('Which income stream are you most familiar with?'),
+('What''s your current work schedule?'),
+('What issues are you facing at work?'),
+('How many hours do you usually work each day?'),
+('How many hours would you like to work each day?'),
+('How do you feel about your money right now?'),
+('Have you ever tried making money outside your main job?'),
+('How confident are you with AI tools?'),
+('Have you used any of these AI tools before?'),
+('What areas would you love to explore?'),
+('Are you open to picking up new skills?'),
+('How ready are you to dive into AI?'),
+('Do you have a dream goal you''re working toward?'),
+('How much time can you invest in your goals daily?'),
+('How well can you stay focused?'),
+('Which device will you use for learning?'),
+('What type of lesson format do you prefer?');
+
+
+-- select * from users;
+-- select * from questions;
 
