@@ -121,6 +121,9 @@ class AI
         $responseData = json_decode($response, true);
         return $responseData['choices'][0]['message']['content'] ?? 'Error: No response from AI.';
     }
+    public function fetchOpportunities(){
+        //still to maintaini this function for  khawola's showOpportunities
+    }
     public function generateSkills(){
 
     }
