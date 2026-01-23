@@ -46,7 +46,7 @@
                 </div>
                 <h3 class="text-xl font-bold text-white mb-2">Aucune roadmap trouvée</h3>
                 <p class="text-slate-400 mb-8">Vous n'avez pas encore généré de roadmap personnalisée.</p>
-                <a href="/questionnaire"
+                <a href="<?= APP_ROOT ?>/questionnaire"
                     class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold transition-all inline-block">
                     Commencer le questionnaire
                 </a>

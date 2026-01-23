@@ -6,8 +6,6 @@ use App\Core\Controller;
 use App\Models\Opportunity;
 use App\Models\User;
 
-
-
 class OpportunityController extends Controller{
     // voir tout les opportunity 
     public function showAll()

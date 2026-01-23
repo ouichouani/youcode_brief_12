@@ -3,7 +3,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 define('BASE_URL', $_SERVER['SCRIPT_NAME']);
 $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
-if ($scriptDir === '/') {
+// var_dump($scriptDir);
+// exit;
+if ($scriptDir === '/' || $scriptDir === '/public') {
     define('APP_ROOT', '');
 } else {
 
@@ -13,6 +15,8 @@ if ($scriptDir === '/') {
         define('APP_ROOT', $scriptDir);
     }
 }
+
+
 
 use App\core\Router;
 use App\core\Database;
