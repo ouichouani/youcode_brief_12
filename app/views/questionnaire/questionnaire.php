@@ -12,7 +12,9 @@
 
 
         <form action="<?= APP_ROOT ?>/questionnaire" method="POST" class="space-y-8">
-            <div class="space-y-6">
+           
+
+                <div class="space-y-6">
                     <?php foreach ($questions as $q): ?>
                         <div
                             class="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-6 transition-all hover:border-indigo-500/50 group">

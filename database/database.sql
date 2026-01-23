@@ -202,7 +202,5 @@ INSERT INTO question (CONTENT) VALUES
 ('Which device will you use for learning?'),
 ('What type of lesson format do you prefer?');
 
-
--- select * from users;
--- select * from questions;
-
+select * from users;
+select * from plan ;

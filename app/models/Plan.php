@@ -14,12 +14,14 @@ class Plan {
         return $stmt->execute([$plan]);    
     }
 
-    public static function getPlane(int $user_id ,int $roadmap_id): array
+    public static function getPlan(int $user_id ,int $roadmap_id): array
     {
         $connection = Database::getInstance()->getConnection();
         $stmt = $connection->prepare("SELECT * FROM plan WHERE user_id = ? AND roadmap_id = ? ") ;
         $stmt->execute([$user_id , $roadmap_id]);    
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        $plan = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if($plan) return $plan ;
+        return [] ;
     }
 
     public static function UpdateProgress(array $plan){

@@ -40,7 +40,7 @@
                         <a href="<?= APP_ROOT ?>/profile"
                             class="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-xs text-white">JD</a>
                         <a href="<?= APP_ROOT ?>/logout" class="text-slate-400 hover:text-red-400 p-2"><i
-                                class="fas fa-sign-out-alt"></i></a>
+                                class="fas fa-sign-out-alt"></i>déconnexion</a>
                     </div>
                 <?php else: ?>
                     <a href="<?= APP_ROOT ?>/login"

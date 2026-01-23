@@ -4,7 +4,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 define('BASE_URL', $_SERVER['SCRIPT_NAME']);
 
 $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
-if ($scriptDir === '/' || $scriptDir == "/public") {
+// var_dump($scriptDir);
+// exit;
+if ($scriptDir === '/' || $scriptDir === '/public') {
     define('APP_ROOT', '');
 } else {
 
@@ -15,9 +17,12 @@ if ($scriptDir === '/' || $scriptDir == "/public") {
     }
 }
 
+
+
 use App\core\Router;
 use App\core\Database;
 use App\Controllers\AuthController;
+use App\Controllers\Dashboard;
 use App\Controllers\QuestionnaireController;
 use App\Controllers\OpportunityController;
 use App\Controllers\HomeController;
@@ -36,7 +41,7 @@ $db->getConnection();
 $router = new Router();
 
 $router->get('/', [HomeController::class, "index"]);
-$router->get('/dashboard', "dashboard/dashboard");
+$router->get('/dashboard', [Dashboard::class, "show"]);
 
 $router->get('/login', [AuthController::class, "showLogin"]);
 $router->post('/login', [AuthController::class, "login"]);
@@ -50,7 +55,8 @@ $router->get('/logout', [AuthController::class, "logout"]);
 
 $router->get('/forgot-password', [AuthController::class, "showForgotPassword"]);
 $router->post('/forgot-password', [AuthController::class, "forgotPassword"]);
-
+$router->get('/reset-password', [AuthController::class, "showResetPassword"]);
+$router->post('/reset-password', [AuthController::class, "resetPassword"]);
 
 // Questionnaire routes
 $router->get('/questionnaire', [QuestionnaireController::class, "askQuest"]);

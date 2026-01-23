@@ -95,7 +95,8 @@ class User
         $connection = Database::getInstance()->getConnection();
         $hashedPassword = self::hashPassword($newPassword);
         $stmt = $connection->prepare("UPDATE users SET password_hash = ?, reset_token = NULL, reset_token_expires_at = NULL WHERE reset_token = ? AND reset_token_expires_at > NOW()");
-        return $stmt->execute([$hashedPassword, $token]);
+        $stmt->execute([$hashedPassword, $token]);
+        return $stmt->rowCount() === 1;
     }
 }
 ?>
