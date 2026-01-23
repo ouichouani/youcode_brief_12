@@ -3,23 +3,18 @@ namespace App\Models;
 
 use App\Core\Database;
 // use PDO;
+use App\Models\User ;
 
 class Opportunity {
     //get tout les Opportunity 
     
     public static function getAll() {
     $db = Database::getInstance()->getConnection();
-    if($db){
-        echo "kyna";
-        $sql = "SELECT * FROM opportunities";
+    $sql = "SELECT * FROM opportunities where user_id = ? ";
     $stmt = $db->prepare($sql);
-    $stmt->execute();
-
+    $stmt->execute([User::getAuthUser()['id']]);
     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    }else{
-        echo "mkynash";
-        return [];
-    }
+
 }
 
     //get Opportunity by id

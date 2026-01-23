@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Core;
+use App\Core\Router ;
 
 class Controller
 {
@@ -12,6 +13,7 @@ class Controller
 
         $router = new Router();
         echo $router->renderView($view, $data);
+        // echo $router->renderLayout() ;
     }
 
     protected function redirect(string $url)

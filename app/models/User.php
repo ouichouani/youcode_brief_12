@@ -79,6 +79,18 @@ class User
         return $stmt->execute([$token]);
     }
 
+    public static function getAuthUser() : array
+    {
+        if(!self::isAuthenticaded()) return [] ;
+        return $_SESSION["user"] ;
+    }
+
+    public static function isAuthenticaded():bool
+    {
+        if(isset($_SESSION['user']) && $_SESSION['user']['id']) return true ;
+        return false ;
+    }
+    
     public static function resetPasswordWithToken(string $token, string $newPassword): bool {
         $connection = Database::getInstance()->getConnection();
         $hashedPassword = self::hashPassword($newPassword);

@@ -43,6 +43,8 @@ class AuthController extends Controller
             $user = User::findByEmail($email);
             if ($user) {
                 $this->startUserSession($user);
+                // echo APP_ROOT ;
+                // exit ;
                 $this->storeSuccessMessage("Registration successful! Please complete the questionnaire.");
                 header('Location: ' . APP_ROOT . '/questionnaire');
                 exit;
@@ -141,13 +143,9 @@ class AuthController extends Controller
         }
     }
 
-    private function startUserSession(array $user): void
-    {
-        if (session_status() === PHP_SESSION_NONE)
-            session_start();
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_fullname'] = $user['name'];
-        $_SESSION['user_email'] = $user['email'];
+    private function startUserSession(array $user): void {
+        // session_start();
+        $_SESSION['user'] = $user;
         $_SESSION['logged_in'] = true;
     }
 
@@ -226,8 +224,7 @@ class AuthController extends Controller
         }
     }
 
-    public function showResetPassword() {
-        $token = $_GET['token'] ?? null;
+    public function showResetPassword($token = null) {
         if (!$token) {
             header('Location: /forgot-password');
             exit;
@@ -279,7 +276,7 @@ class AuthController extends Controller
         
         if (!empty($errors)) {
             $this->storeValidationErrors($errors);
-            header('Location: /reset-password?token=' . $token);
+            header('Location: /reset-password/' . $token);
             exit;
         }
 
@@ -293,9 +290,10 @@ class AuthController extends Controller
             exit;
         }
     }
+
     private function sendPasswordResetEmail(string $email, string $token): bool {
         try {
-            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . "/reset-password?token=" . $token;
+            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . "/reset-password/" . $token;
             $subject = "Password Reset Request - AI Revenue Generator";
             $body = "
             <!DOCTYPE html>
@@ -349,4 +347,6 @@ class AuthController extends Controller
             return false;
         }
     }
+
+    
 }
