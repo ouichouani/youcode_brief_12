@@ -5,24 +5,21 @@ use App\Core\Database;
 // use PDO;
 
 class Opportunity {
+
     //get tout les Opportunity 
-    
     public static function getAll() {
-    $db = Database::getInstance()->getConnection();
-    if($db){
-        echo "kyna";
-        $sql = "SELECT * FROM opportunities";
-    $stmt = $db->prepare($sql);
-    $stmt->execute();
-
-    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    }else{
-        echo "mkynash";
-        return [];
+        $db = Database::getInstance()->getConnection();
+        if($db){
+            $sql = "SELECT * FROM opportunities";
+            $stmt = $db->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } else {
+            return [];
+        }
     }
-}
 
-    //get Opportunity by id
+    //get opportunity by id
     public static function getById($id) {
         $db = Database::getInstance()->getConnection();
         $query = "SELECT * FROM opportunities WHERE id = ?";
@@ -31,3 +28,6 @@ class Opportunity {
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 }
+
+
+

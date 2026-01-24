@@ -35,12 +35,15 @@
                     </div>
                 <?php endif; ?>
 
-                <form action="register" method="POST" class="space-y-6">
+                <form action="<?= APP_ROOT ?>/register" method="POST" class="space-y-6">
                     <div>
                         <label class="block text-gray-700 text-sm font-medium mb-2" for="fullname">
                             <i class="fas fa-user mr-2"></i>Full Name
                         </label>
-                        <input type="text" id="fullname" name="fullname" value="<?php echo htmlspecialchars($_SESSION['old']['fullname'] ?? ''); ?>" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="John Doe">
+                        <input type="text" id="fullname" name="fullname"
+                            value="<?php echo htmlspecialchars($_SESSION['old']['fullname'] ?? ''); ?>" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            placeholder="John Doe">
                         <?php unset($_SESSION['old']['fullname']); ?>
                     </div>
 
@@ -48,7 +51,10 @@
                         <label class="block text-gray-700 text-sm font-medium mb-2" for="email">
                             <i class="fas fa-envelope mr-2"></i>Email Address
                         </label>
-                        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($_SESSION['old']['email'] ?? ''); ?>" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="you@example.com">
+                        <input type="email" id="email" name="email"
+                            value="<?php echo htmlspecialchars($_SESSION['old']['email'] ?? ''); ?>" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            placeholder="you@example.com">
                         <?php unset($_SESSION['old']['email']); ?>
                     </div>
 
@@ -56,7 +62,9 @@
                         <label class="block text-gray-700 text-sm font-medium mb-2" for="password">
                             <i class="fas fa-lock mr-2"></i>Password
                         </label>
-                        <input type="password" id="password" name="password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="••••••••">
+                        <input type="password" id="password" name="password" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            placeholder="••••••••">
                         <div class="mt-2 text-xs text-gray-500">
                             Must contain: 8+ characters, uppercase, lowercase, number
                         </div>
@@ -66,10 +74,13 @@
                         <label class="block text-gray-700 text-sm font-medium mb-2" for="confirm_password">
                             <i class="fas fa-lock mr-2"></i>Confirm Password
                         </label>
-                        <input type="password" id="confirm_password" name="confirm_password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="••••••••">
+                        <input type="password" id="confirm_password" name="confirm_password" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            placeholder="••••••••">
                     </div>
 
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
+                    <button type="submit"
+                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
                         <i class="fas fa-user-plus mr-2"></i>Create Account
                     </button>
                 </form>
@@ -83,7 +94,7 @@
                 <div class="text-center">
                     <p class="text-gray-600">
                         Already have an account?
-                        <a href="/login" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                        <a href="<?= APP_ROOT ?>/login" class="text-indigo-600 hover:text-indigo-800 font-medium">
                             <i class="fas fa-sign-in-alt mr-1"></i>Sign In
                         </a>
                     </p>
@@ -93,20 +104,20 @@
     </div>
 
     <script>
-        document.getElementById('password').addEventListener('input', function(e) {
+        document.getElementById('password').addEventListener('input', function (e) {
             const password = e.target.value;
             const strength = document.getElementById('password-strength');
-            
+
             if (!strength) {
                 const div = document.createElement('div');
                 div.id = 'password-strength';
                 div.className = 'mt-2 text-xs';
                 e.target.parentNode.appendChild(div);
             }
-            
+
             let strengthText = '';
             let strengthClass = '';
-            
+
             if (password.length === 0) {
                 strengthText = '';
             } else if (password.length < 8) {
@@ -119,8 +130,8 @@
                 strengthText = 'Strong';
                 strengthClass = 'text-green-500';
             }
-            
-            document.getElementById('password-strength').innerHTML = 
+
+            document.getElementById('password-strength').innerHTML =
                 strengthText ? `Strength: <span class="font-medium ${strengthClass}">${strengthText}</span>` : '';
         });
     </script>
