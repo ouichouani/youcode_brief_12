@@ -19,7 +19,7 @@ class AI
     /**
      * Core generation method with strict JSON enforcement
      */
-    public static function generate(string $prompt, float $temperature = 0.5): string
+    public static function generate(string $prompt, float $temperature = 0.7): string
     {
         self::init();
 

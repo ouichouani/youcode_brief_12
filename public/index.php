@@ -27,6 +27,9 @@ use App\Controllers\HomeController;
 use App\Controllers\RoadmapController;
 use App\Controllers\TasksController;
 
+use App\Controllers\CommunityController;
+use App\Controllers\ProfileController;
+
 session_start();
 
 $db = Database::getInstance();
@@ -65,10 +68,19 @@ $router->get('/roadmap/show', [RoadmapController::class, "renderRoadmap"]);
 $router->get('/tasks', [TasksController::class, "index"]);
 $router->post('/markAsDone', [TasksController::class, "markAsDone"]);
 
-// Placeholder routes for navigation links
+// Community routes
+$router->get('/community', [CommunityController::class, "index"]);
+$router->post('/community/post', [CommunityController::class, "createPost"]);
+$router->post('/community/comment', [CommunityController::class, "addComment"]);
+$router->post('/community/like', [CommunityController::class, "toggleLike"]);
+
+// Profile routes
+$router->get('/profile', [ProfileController::class, "index"]);
+$router->post('/profile/update', [ProfileController::class, "update"]);
+$router->post('/profile/password', [ProfileController::class, "changePassword"]);
+
+// Placeholder routes
 $router->get('/opportunities', [OpportunityController::class, "showAll"]);
-$router->get('/community', [HomeController::class, "community"]);
 $router->get('/skills', [HomeController::class, "skills"]);
-$router->get('/profile', [HomeController::class, "profile"]);
 
 $router->resolve();

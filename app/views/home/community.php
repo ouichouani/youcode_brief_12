@@ -50,66 +50,93 @@
                 <!-- Create Post -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                     <div class="flex space-x-4">
-                        <div class="w-12 h-12 rounded-full bg-slate-200 flex-shrink-0"></div>
+                        <div class="w-12 h-12 rounded-full bg-slate-200 flex-shrink-0 flex items-center justify-center font-bold text-slate-500">
+                            <?= strtoupper(substr($_SESSION['user']['name'] ?? 'U', 0, 1)) ?>
+                        </div>
                         <div class="flex-grow">
-                            <textarea placeholder="Quoi de neuf dans votre aventure ?"
-                                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-                                rows="3"></textarea>
-                            <div class="flex justify-between items-center mt-4">
-                                <div class="flex space-x-2">
-                                    <button class="p-2 text-slate-400 hover:text-indigo-600 transition-colors">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                            </path>
-                                        </svg>
-                                    </button>
+                            <form action="<?= APP_ROOT ?>/community/post" method="POST">
+                                <textarea name="content" placeholder="Quoi de neuf dans votre aventure ?"
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                                    rows="3" required></textarea>
+                                <div class="flex justify-end mt-4">
+                                    <button type="submit"
+                                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl font-bold transition-all shadow-lg shadow-indigo-100">Publier</button>
                                 </div>
-                                <button
-                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl font-bold transition-all shadow-lg shadow-indigo-100">Publier</button>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
 
                 <!-- Feed Posts -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                    <div class="p-6">
-                        <div class="flex items-center space-x-3 mb-4">
-                            <div
-                                class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">
-                                KA</div>
-                            <div>
-                                <p class="text-sm font-bold text-slate-800">Karim A.</p>
-                                <p class="text-xs text-slate-500">Il y a 2 heures</p>
+                <?php if (empty($posts)): ?>
+                    <div class="bg-white p-12 rounded-2xl shadow-sm border border-slate-100 text-center">
+                        <p class="text-slate-400">Aucun message pour le moment. Soyez le premier à partager !</p>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($posts as $post): ?>
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                            <div class="p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
+                                            <?= strtoupper(substr($post['author'], 0, 1)) ?>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-slate-800"><?= htmlspecialchars($post['author']) ?></p>
+                                            <p class="text-xs text-slate-500"><?= date('d M Y, H:i', strtotime($post['created_at'])) ?></p>
+                                        </div>
+                                    </div>
+                                    <?php if ($post['is_high_value']): ?>
+                                        <span class="bg-amber-100 text-amber-600 text-[10px] font-black px-2 py-1 rounded uppercase">High Value</span>
+                                    <?php endif; ?>
+                                </div>
+                                <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                                    <?= nl2br(htmlspecialchars($post['content'])) ?>
+                                </p>
+                                <div class="flex items-center space-x-6 pt-4 border-t border-slate-50">
+                                    <form action="<?= APP_ROOT ?>/community/like" method="POST" class="inline">
+                                        <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
+                                        <button type="submit" class="flex items-center space-x-2 <?= $post['is_liked'] ? 'text-rose-500' : 'text-slate-400' ?> hover:text-rose-500 transition-colors">
+                                            <svg class="w-5 h-5" fill="<?= $post['is_liked'] ? 'currentColor' : 'none' ?>" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                                                </path>
+                                            </svg>
+                                            <span class="text-sm font-medium"><?= $post['likes_count'] ?></span>
+                                        </button>
+                                    </form>
+                                    <div class="flex items-center space-x-2 text-slate-400">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                                            </path>
+                                        </svg>
+                                        <span class="text-sm font-medium"><?= count($post['comments']) ?></span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Comments Section -->
+                                <div class="mt-4 space-y-3">
+                                    <?php foreach ($post['comments'] as $comment): ?>
+                                        <div class="bg-slate-50 p-3 rounded-xl">
+                                            <p class="text-xs font-bold text-slate-800"><?= htmlspecialchars($comment['author']) ?></p>
+                                            <p class="text-xs text-slate-600"><?= htmlspecialchars($comment['content']) ?></p>
+                                        </div>
+                                    <?php endforeach; ?>
+                                    
+                                    <form action="<?= APP_ROOT ?>/community/comment" method="POST" class="mt-3">
+                                        <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
+                                        <div class="flex space-x-2">
+                                            <input type="text" name="content" placeholder="Ajouter un commentaire..." required
+                                                class="flex-grow bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                                            <button type="submit" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold font-bold">Envoyer</button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                        <p class="text-slate-600 text-sm leading-relaxed mb-4">
-                            Je viens de terminer ma première phase de roadmap ! Les conseils sur l'IA générative m'ont
-                            permis de gagner 3 heures de travail par jour. Qui d'autre a testé l'automatisation ? 🚀
-                        </p>
-                        <div class="flex items-center space-x-6 pt-4 border-t border-slate-50">
-                            <button
-                                class="flex items-center space-x-2 text-slate-400 hover:text-rose-500 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
-                                    </path>
-                                </svg>
-                                <span class="text-sm font-medium">24</span>
-                            </button>
-                            <button
-                                class="flex items-center space-x-2 text-slate-400 hover:text-indigo-600 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
-                                    </path>
-                                </svg>
-                                <span class="text-sm font-medium">7</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>
     </div>

@@ -27,8 +27,9 @@ class Community
         $score = $mod['score'] ?? 0;
         $isHighValue = $mod['is_high_value'] ?? false;
 
-        $stmt = $db->prepare("INSERT INTO posts (user_id, title, content, status, ai_score, is_high_value) VALUES (?, ?, ?, ?, ?, ?)");
-        return $stmt->execute([$userId, $title, $content, $status, $score, $isHighValue]);
+        $stmt = $db->prepare("INSERT INTO posts (user_id, title, content, status, ai_score, is_high_value, type) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        // Add default type 'experience' for now as per schema
+        return $stmt->execute([$userId, $title, $content, $status, $score, $isHighValue ? 1 : 0, 'experience']);
     }
 
     public function getFeed($limit = 20)
@@ -49,5 +50,51 @@ class Community
         $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)");
         return $stmt->execute([$postId, $userId, $content]);
+    }
+
+    public function getComments(int $postId)
+    {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("SELECT c.*, u.name as author 
+                             FROM comments c 
+                             JOIN users u ON c.user_id = u.id 
+                             WHERE c.post_id = ? 
+                             ORDER BY c.created_at ASC");
+        $stmt->execute([$postId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function toggleLike(int $postId, int $userId)
+    {
+        $db = Database::getInstance()->getConnection();
+
+        // Check if already liked
+        $stmt = $db->prepare("SELECT id FROM likes WHERE post_id = ? AND user_id = ?");
+        $stmt->execute([$postId, $userId]);
+        $like = $stmt->fetch();
+
+        if ($like) {
+            $stmt = $db->prepare("DELETE FROM likes WHERE id = ?");
+            return $stmt->execute([$like['id']]);
+        } else {
+            $stmt = $db->prepare("INSERT INTO likes (post_id, user_id) VALUES (?, ?)");
+            return $stmt->execute([$postId, $userId]);
+        }
+    }
+
+    public function getLikesCount(int $postId)
+    {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("SELECT COUNT(*) FROM likes WHERE post_id = ?");
+        $stmt->execute([$postId]);
+        return $stmt->fetchColumn();
+    }
+
+    public function isLiked(int $postId, int $userId)
+    {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("SELECT COUNT(*) FROM likes WHERE post_id = ? AND user_id = ?");
+        $stmt->execute([$postId, $userId]);
+        return $stmt->fetchColumn() > 0;
     }
 }

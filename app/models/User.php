@@ -57,6 +57,13 @@ class User
         return $stmt->execute([$hashedPassword, $userId]);
     }
 
+    public static function updateProfile(int $userId, string $name, string $email): bool
+    {
+        $connection = Database::getInstance()->getConnection();
+        $stmt = $connection->prepare("UPDATE users SET name = ?, email = ? WHERE id = ?");
+        return $stmt->execute([$name, $email, $userId]);
+    }
+
     public static function createPasswordResetToken(string $email, string $token, string $expiresAt): bool
     {
         $connection = Database::getInstance()->getConnection();
@@ -79,19 +86,22 @@ class User
         return $stmt->execute([$token]);
     }
 
-    public static function getAuthUser() : array
+    public static function getAuthUser(): array
     {
-        if(!self::isAuthenticaded()) return [] ;
-        return $_SESSION["user"] ;
+        if (!self::isAuthenticaded())
+            return [];
+        return $_SESSION["user"];
     }
 
-    public static function isAuthenticaded():bool
+    public static function isAuthenticaded(): bool
     {
-        if(isset($_SESSION['user']) && $_SESSION['user']['id']) return true ;
-        return false ;
+        if (isset($_SESSION['user']) && $_SESSION['user']['id'])
+            return true;
+        return false;
     }
-    
-    public static function resetPasswordWithToken(string $token, string $newPassword): bool {
+
+    public static function resetPasswordWithToken(string $token, string $newPassword): bool
+    {
         $connection = Database::getInstance()->getConnection();
         $hashedPassword = self::hashPassword($newPassword);
         $stmt = $connection->prepare("UPDATE users SET password_hash = ?, reset_token = NULL, reset_token_expires_at = NULL WHERE reset_token = ? AND reset_token_expires_at > NOW()");
