@@ -5,6 +5,9 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Models\Questionnaire;
 use App\models\Roadmap;
+use App\models\AI;
+use App\Models\Plan;
+use DateTime;
 
 class QuestionnaireController extends Controller
 {
@@ -27,7 +30,12 @@ class QuestionnaireController extends Controller
             session_start();
         }
 
-        $userId = $_SESSION['user_id'] ?? 1;
+        if(!isset($_SESSION['user'])){
+            $_SESSION['error'] = 'not authenticated' ;
+            return ;
+        }
+
+        $userId = $_SESSION['user']['id'] ;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['responses'])) {
             $responses = $_POST['responses'];
@@ -46,11 +54,19 @@ class QuestionnaireController extends Controller
             session_start();
         }
 
-        $userId = $_SESSION['user_id'] ?? 1;
+        if(!isset($_SESSION['user'])){
+            $_SESSION['error'] = 'not authenticated' ;
+            return ;
+        }
+        
+        $userId = $_SESSION['user']['id'] ;
+
         $roadmapContent = $this->model->generateRoadmapForUser($userId);
 
         $roadmapModel = new Roadmap();
         $roadmapModel->saveRoadmap($userId, $roadmapContent);
+
+        Plan::create() ;
 
         header("Location: " . APP_ROOT . "/roadmap/show");
         exit;

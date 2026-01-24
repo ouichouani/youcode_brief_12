@@ -14,7 +14,10 @@ class Roadmap
         $request = "SELECT * FROM roadmaps WHERE user_id = ? ORDER BY created_at DESC LIMIT 1 "; 
         $stmt = $connection->prepare($request);
         $stmt->execute([$userId]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: [];
+        $Roadmap = $stmt->fetch(\PDO::FETCH_ASSOC) ;
+        if($Roadmap) return $Roadmap;
+        return [] ;
+       
     }
 
     public static function saveRoadmap($userId, $content): bool

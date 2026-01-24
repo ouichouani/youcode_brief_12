@@ -1,11 +1,13 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
+session_start() ;
+
+
 define('BASE_URL', $_SERVER['SCRIPT_NAME']);
 
 $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
-// var_dump($scriptDir);
-// exit;
+
 if ($scriptDir === '/' || $scriptDir === '/public') {
     define('APP_ROOT', '');
 } else {
@@ -26,14 +28,9 @@ use App\Controllers\Dashboard;
 use App\Controllers\QuestionnaireController;
 use App\Controllers\OpportunityController;
 use App\Controllers\HomeController;
+use App\Controllers\PlanController;
 use App\Controllers\RoadmapController;
 
-// echo '<pre>' ;
-// var_dump($_SERVER);
-// echo '</pre>' ;
-
-session_start();
-// session_destroy() ;
 
 $db = Database::getInstance();
 $db->getConnection();
@@ -65,6 +62,8 @@ $router->post('/questionnaire', [QuestionnaireController::class, "captureRespons
 // Roadmap routes
 $router->get('/roadmap/generate', [QuestionnaireController::class, "generateRoadmap"]);
 $router->get('/roadmap/show', [RoadmapController::class, "renderRoadmap"]);
+
+$router->get('/plan/generate', [PlanController::class, "generatePlan"]);
 
 // Placeholder routes for navigation links
 // $router->get('/opportunities', [OpportunityController::class, "showAll"]);

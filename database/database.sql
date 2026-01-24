@@ -49,28 +49,24 @@ CREATE TABLE "users" (
 );
 
 
-CREATE TABLE roadmap (
+CREATE TABLE roadmaps (
     id SERIAL PRIMARY KEY,
-    user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
-    step INT NOT NULL,
+    user_id INTEGER NOT NULL,
     content TEXT NOT NULL,
-    --skills TEXT [], -- array of skill names or tags
-    -- skills TEXT DEFAULT [(SELECT name from skills where roadmap_id = id )]
-    duration VARCHAR(50),
-    passed BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 
 CREATE TABLE plan (
     id SERIAL PRIMARY KEY,
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
-    roadmap_id BIGINT REFERENCES roadmap (id) ON DELETE CASCADE,
+    roadmap_id BIGINT REFERENCES roadmaps (id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     completion_percentage INT DEFAULT 0 CHECK (
         completion_percentage BETWEEN 0 AND 100
     ),
-    ai_notes TEXT,
+    ai_notes TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -128,10 +124,12 @@ CREATE TABLE opportunities (
 CREATE TABLE skills (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users (id) ON DELETE CASCADE ,
-    roadmap_id INT REFERENCES roadmap (id) ON DELETE SET NULL,
+    roadmap_id INT REFERENCES roadmaps (id) ON DELETE SET NULL,
     name VARCHAR(150) NOT NULL,
     description TEXT,
-    category skill_category_enum DEFAULT 'other'
+    category skill_category_enum DEFAULT 'other' ,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
 );
 
 CREATE TABLE posts (
@@ -163,21 +161,15 @@ CREATE TABLE likes (
 
 -- User responses table
 -- drop table user_responses;
-CREATE TABLE IF NOT EXISTS user_responses (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    question_id INTEGER REFERENCES question (id),
-    response_text TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- CREATE TABLE IF NOT EXISTS user_responses (
+--     id SERIAL PRIMARY KEY,
+--     user_id INTEGER NOT NULL,
+--     question_id INTEGER REFERENCES question (id),
+--     response_text TEXT NOT NULL,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- );
 
 -- Roadmaps table
-CREATE TABLE IF NOT EXISTS roadmaps (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    content TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
 
 -- Initial questions
 INSERT INTO question (CONTENT) VALUES
@@ -203,4 +195,33 @@ INSERT INTO question (CONTENT) VALUES
 ('What type of lesson format do you prefer?');
 
 select * from users;
-select * from plan ;
+select * from opportunities ;
+select * from roadmaps ;
+
+INSERT INTO answers (user_id, question_id, content) VALUES
+(1, 1, '25'),
+(1, 2, 'Learn coding'),
+(1, 3, 'Beginner'),
+(1, 4, 'Freelancing'),
+(1, 5, '9am-5pm'),
+(1, 6, 'Time management'),
+(1, 7, '8'),
+(1, 8, '4'),
+(1, 9, 'Neutral'),
+(1, 10, 'Yes'),
+(1, 11, 'Confident'),
+(1, 12, 'Yes'),
+(1, 13, 'AI & Web Development'),
+(1, 14, 'Yes'),
+(1, 15, 'Ready'),
+(1, 16, 'Build a startup'),
+(1, 17, '3 hours'),
+(1, 18, 'Well'),
+(1, 19, 'Laptop'),
+(1, 20, 'Video lessons');
+
+insert into skills (user_id , roadmap_id , name , description ,category ) values 
+    (1 , 1 , 'smartnes' , 'saafi wa siir', 'other' ),
+    (1 , 1 , 'feer' , 'saafi wa siir 2' , 'other' ),
+    (1 , 1 , 'power' , 'saafi wa siir 3' , 'other' );
+

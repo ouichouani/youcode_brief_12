@@ -75,7 +75,7 @@ class AI
     public function generateRoadmap(array $responses): string
     {
         self::init();
-        
+
         if (empty(self::$apiKey)) {
             return "Error: Hugging Face Token not configured.";
         }
@@ -121,16 +121,159 @@ class AI
         $responseData = json_decode($response, true);
         return $responseData['choices'][0]['message']['content'] ?? 'Error: No response from AI.';
     }
-    public function generateSkills(){
 
-    }
-    public function generatePlans(){
+    
+    public function generateSkills() {}
 
-    }
-    public function generateTasks(){
+    public static function generatePlan(string $roadmapContent, \DateTime $created_at)
+    {
+        $created_at = $created_at->format('Y-m-d H:i:s');
+        $message = "
+                You are an expert learning coach.
 
+                Based strictly on the following roadmap step, generate a detailed daily study/work plan.
+
+                ROADMAP STEP:
+                $roadmapContent
+
+                ROADMAP CREATED AT:
+                $created_at
+
+                REQUIREMENTS:
+                - The plan must be only for TODAY.
+                - Break the plan into 3–6 clear, actionable tasks.
+                - Each task must include:
+                • Objective
+                • Concrete action to perform
+                • Estimated time
+                - Include 2–3 high-quality learning resources (articles, documentation, or tutorials).
+                - The plan must directly support completing this roadmap step.
+                - Avoid generic advice. Be specific and practical.
+
+                OUTPUT FORMAT:
+                Return the response in structured sections:
+                1. Daily Objective
+                2. Task List (numbered)
+                3. Resources
+                4. Expected Outcome
+                ";
+
+        return self::generateResponse($message);
     }
-    public function showOpportunities(){
-        
+
+    public function generateTasks() {}
+    //     public function showOpportunities(array $skills , $roadmapContent , $questions , $answers ) {
+
+    //         implode(" ," , $skills) ;
+    //         implode(" ," ,$questions) ;
+    //         implode(" ," ,$answers) ;
+
+    //         $message = "
+    //                 You are an expert learning coach.
+
+    //                 Based strictly on the following roadmap step, generate a detailed daily study/work plan.
+
+    //                 ROADMAP STEP:
+    //                 $roadmapContent
+
+    //                 ROADMAP CREATED AT:
+
+
+    //                 REQUIREMENTS:
+    //                 - The plan must be only for TODAY.
+    //                 - Break the plan into 3–6 clear, actionable tasks.
+    //                 - Each task must include:
+    //                 • Objective
+    //                 • Concrete action to perform
+    //                 • Estimated time
+    //                 - Include 2–3 high-quality learning resources (articles, documentation, or tutorials).
+    //                 - The plan must directly support completing this roadmap step.
+    //                 - Avoid generic advice. Be specific and practical.
+
+    //                 OUTPUT FORMAT:
+    //                 Return the response in structured sections:
+    //                 1. Daily Objective
+    //                 2. Task List (numbered)
+    //                 3. Resources
+    //                 4. Expected Outcome
+    //                 ";   
+    //                         return self::generateResponse($message);
+
+    //     }
+    public static function generateOpportunities(
+        array $skills,
+        string $roadmapContent,
+        array $questions,
+        array $answers
+    ) {
+        $skillsText    = implode(', ', $skills);
+        $questionsText = implode(' | ', $questions);
+        $answersText   = implode(' | ', $answers);
+
+        $message = "
+    You are a senior market analyst and career strategist.
+
+    Your task is to generate REALISTIC, CURRENT, and ACTIONABLE opportunities based on the user's profile.
+
+    USER PROFILE
+    -------------
+    Skills:
+    $skillsText
+
+    Roadmap focus:
+    $roadmapContent
+
+    Questionnaire (what was asked):
+    $questionsText
+
+    User answers:
+    $answersText
+
+    OBJECTIVE
+    ---------
+    Identify 3 to 5 concrete opportunities the user could pursue RIGHT NOW.
+    These can include:
+    - Freelancing opportunities
+    - Remote jobs
+    - Micro-SaaS ideas
+    - Digital products
+    - Consulting services
+    - Local or online business ideas
+
+    Each opportunity MUST align with the user’s skills and roadmap.
+
+    DATABASE CONSTRAINTS
+    --------------------
+    Each opportunity must be compatible with this table:
+
+    (title, description, estimated_income, external_link, market_source)
+
+    OUTPUT RULES
+    ------------
+    Return ONLY valid JSON.
+    Do NOT add explanations.
+    Do NOT wrap in markdown.
+
+    FORMAT (strict):
+    [
+    {
+        \"title\": \"...\",
+        \"description\": \"Clear description of what the user would do and for whom\",
+        \"estimated_income\": 0,
+        \"external_link\": \"https://...\",
+        \"market_source\": \"fiverr\" // MUST be one of: 'fiverr', 'upwork', 'saas', 'other'
+    }
+    ]
+
+    QUALITY RULES
+    -------------
+    - Opportunities must be realistic and monetizable
+    - estimated_income must be monthly USD estimate (number only)
+    - external_link must be a relevant platform or example
+    - Avoid generic ideas
+    - Tailor ideas strictly to this user profile
+    ";
+
+            return self::generateResponse($message);
     }
 }
