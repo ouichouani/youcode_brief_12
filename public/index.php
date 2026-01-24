@@ -17,8 +17,6 @@ if ($scriptDir === '/' || $scriptDir === '/public') {
     }
 }
 
-
-
 use App\core\Router;
 use App\core\Database;
 use App\Controllers\AuthController;
@@ -27,13 +25,9 @@ use App\Controllers\QuestionnaireController;
 use App\Controllers\OpportunityController;
 use App\Controllers\HomeController;
 use App\Controllers\RoadmapController;
-
-// echo '<pre>' ;
-// var_dump($_SERVER);
-// echo '</pre>' ;
+use App\Controllers\TasksController;
 
 session_start();
-// session_destroy() ;
 
 $db = Database::getInstance();
 $db->getConnection();
@@ -47,7 +41,6 @@ $router->get('/login', [AuthController::class, "showLogin"]);
 $router->post('/login', [AuthController::class, "login"]);
 
 $router->get('/signup', [AuthController::class, "showRegister"]);
-// Alias provided in splash
 $router->get('/register', [AuthController::class, "showRegister"]);
 $router->post('/register', [AuthController::class, "register"]);
 
@@ -62,14 +55,20 @@ $router->post('/reset-password', [AuthController::class, "resetPassword"]);
 $router->get('/questionnaire', [QuestionnaireController::class, "askQuest"]);
 $router->post('/questionnaire', [QuestionnaireController::class, "captureResponse"]);
 
+$router->get('/plan', [Dashboard::class, "createPlan"]);
+
 // Roadmap routes
 $router->get('/roadmap/generate', [QuestionnaireController::class, "generateRoadmap"]);
 $router->get('/roadmap/show', [RoadmapController::class, "renderRoadmap"]);
 
+// Task routes
+$router->get('/tasks', [TasksController::class, "index"]);
+$router->post('/markAsDone', [TasksController::class, "markAsDone"]);
+
 // Placeholder routes for navigation links
-// $router->get('/opportunities', [OpportunityController::class, "showAll"]);
-// $router->get('/community', ...); 
-// $router->get('/skills', ...);
-// $router->get('/profile', ...);
+$router->get('/opportunities', [OpportunityController::class, "showAll"]);
+$router->get('/community', [HomeController::class, "community"]);
+$router->get('/skills', [HomeController::class, "skills"]);
+$router->get('/profile', [HomeController::class, "profile"]);
 
 $router->resolve();

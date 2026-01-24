@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Models\Questionnaire;
 use App\models\Roadmap;
+use App\Models\User;
 
 class QuestionnaireController extends Controller
 {
@@ -15,19 +16,25 @@ class QuestionnaireController extends Controller
         $this->model = new Questionnaire();
     }
 
+    private function checkAuth()
+    {
+        if (!User::isAuthenticaded()) {
+            header('Location: ' . APP_ROOT . '/login');
+            exit;
+        }
+    }
+
     public function askQuest()
     {
+        $this->checkAuth();
         $questions = $this->model->getAllQuest();
         $this->view("questionnaire/questionnaire", ['questions' => $questions]);
     }
 
     public function captureResponse()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        $userId = $_SESSION['user_id'] ?? 1;
+        $this->checkAuth();
+        $userId = $_SESSION['user']['id'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['responses'])) {
             $responses = $_POST['responses'];
@@ -42,11 +49,8 @@ class QuestionnaireController extends Controller
 
     public function generateRoadmap()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        $userId = $_SESSION['user_id'] ?? 1;
+        $this->checkAuth();
+        $userId = $_SESSION['user']['id'];
         $roadmapContent = $this->model->generateRoadmapForUser($userId);
 
         $roadmapModel = new Roadmap();

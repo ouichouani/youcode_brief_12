@@ -1,71 +1,94 @@
 <?php
 
-
-
 namespace app\controllers;
 
-use App\Controllers\AI;
+use App\Models\AI;
 use App\Core\Controller;
-use App\Core\Router;
 use App\Models\Opportunity;
 use App\Models\Roadmap;
 use App\Models\Plan;
 use App\Models\Skill;
 use App\Models\User;
+use App\Models\Questionnaire;
+use App\Models\Task;
 
 class Dashboard extends Controller
 {
 
-    // private AI $AI ; 
-    // private User $user ; 
-
+    private AI $AI;
 
     public function __construct()
     {
-        // $this->AI = new AI() ;
-        // $this->user = User::getInstence() ;
+        $this->AI = new AI();
     }
 
 
+    private function checkAuth()
+    {
+        if (!User::isAuthenticaded()) {
+            header('Location: ' . APP_ROOT . '/login');
+            exit;
+        }
+    }
+
     public function show()
     {
-
         try {
+            $this->checkAuth();
 
-            if (!isset($_SESSION['user'])) {
-                echo $this->view("user/login");
+            $user = User::getAuthUser();
+            if (!$user) {
+                header('Location: ' . APP_ROOT . '/login');
                 exit;
             }
 
-            if (!User::isAuthenticaded()) throw new \Exception('not authenticated');
+            // Fetch correct roadmap for the logged-in user
+            $Roadmap = Roadmap::getRoadmap($user['id']);
 
-            $user = User::getAuthUser();
-            if (!$user) throw new \Exception('somthing wrong in roadmap fetching');
+            // Default values
+            $plan = [];
+            $skills = [];
+            $progress = 0;
 
-            // $Roadmap = Roadmap::getRoadmap($user['id']);
-            $Roadmap = Roadmap::getRoadmap(1);
-            if (!$Roadmap) throw new \Exception('somthing wrong in roadmap fetching');
+            if ($Roadmap) {
+                // Check if Plan exists
+                $plan = Plan::getPlan($user['id'], $Roadmap['id']);
 
-            $plan = Plan::getPlan($user['id'], $Roadmap['id']);
-            // if (!$plan) throw new \Exception('somthing wrong in plan fetching');
+                if (!empty($plan)) {
+                    $skills = Skill::getSkills($user['id'], $Roadmap['id']);
 
-            $skills = Skill::getSkills($user['id'], $Roadmap['id']);
+                    // Fetch real tasks from database
+                    $dbTasks = Task::getAll($user['id']);
 
-            $progress = $plan['completion_percentage'];
+                    // Decode roadmap content for the view structure
+                    if (isset($Roadmap['content'])) {
+                        $decoded = json_decode($Roadmap['content'], true);
+                        if (json_last_error() === JSON_ERROR_NONE) {
+                            $Roadmap['structured_content'] = $decoded;
+                        }
+                    }
 
-            //GET AUTH USER OPPORTUNITY
+                    // Map completed status from DB tasks to structured content if needed, 
+                    // or just pass dbTasks. I'll pass dbTasks.
+                    $progress = $plan['completion_percentage'] ?? 0;
+                    if (!empty($dbTasks)) {
+                        $completed = count(array_filter($dbTasks, fn($t) => $t['is_completed']));
+                        $progress = round(($completed / count($dbTasks)) * 100);
+                    }
+                }
+            }
+
             $opportunities = Opportunity::getAll();
-
 
             $data = [
                 "user" => $user,
                 "roadmap" => $Roadmap,
-                "plan" => $plan ,
+                "plan" => $plan,
                 "skills" => $skills,
+                "dbTasks" => $dbTasks ?? [],
                 "progress" => $progress,
                 "opportunities" => $opportunities,
             ];
-
 
             $this->view('dashboard/dashboard', $data);
         } catch (\Exception $e) {
@@ -76,26 +99,123 @@ class Dashboard extends Controller
 
     public function createPlan()
     {
-        // ...
+        if (session_status() === PHP_SESSION_NONE)
+            session_start();
+
+        $user = User::getAuthUser();
+        if (!$user) {
+            header("Location: /login");
+            exit;
+        }
+
+        try {
+            // 1. Generate Structured Roadmap (JSON)
+            $questModel = new Questionnaire();
+            $roadmapRaw = $questModel->generateRoadmapForUser($user['id']);
+            $roadmapData = json_decode($roadmapRaw, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE || !isset($roadmapData['phases'])) {
+                throw new \Exception("Invalid Roadmap AI output. Ensure tokens and model are correct.");
+            }
+
+            // 2. Save Master Roadmap
+            $roadmapId = Roadmap::saveRoadmap($user['id'], $roadmapRaw);
+            if (!$roadmapId)
+                throw new \Exception("Persistence failure: Roadmap.");
+
+            // 3. Skill Extraction Engine
+            $skillsRaw = AI::extractSkills($roadmapRaw);
+            $skillsData = json_decode($skillsRaw, true);
+
+            if (isset($skillsData['skills'])) {
+                foreach ($skillsData['skills'] as $skill) {
+                    // Assuming Skill model has name, category, level, description
+                    // We'll map them to existing create or expand it
+                    Skill::create($user['id'], (int) $roadmapId, $skill['name']);
+                    // Note: If Skill::create only takes name, we might want to store more in a 'meta' column later
+                }
+            }
+
+            // 4. Create Plan & Tasks Tracking
+            $planId = Plan::create($user['id'], (int) $roadmapId, "AI Generated Adaptive Plan");
+
+            if ($planId) {
+                foreach ($roadmapData['phases'] as $phase) {
+                    foreach ($phase['tasks'] as $task) {
+                        $taskDesc = $task['task_title'] . ": " . $task['description'];
+                        Task::create($user['id'], (int) $planId, $taskDesc, $task['skill']);
+                    }
+                }
+            }
+
+            // 5. Opportunity Matching Engine
+            $oppsRaw = AI::matchOpportunities($skillsData['skills'] ?? []);
+            $oppsData = json_decode($oppsRaw, true);
+
+            if (isset($oppsData['opportunities'])) {
+                foreach ($oppsData['opportunities'] as $opp) {
+                    Opportunity::create(
+                        $user['id'],
+                        $opp['title'],
+                        $opp['action_plan_summary'] . " (Platform: " . $opp['platform'] . ")",
+                        (int) preg_replace('/[^0-9]/', '', $opp['estimated_monthly_income']),
+                        $opp['type']
+                    );
+                }
+            }
+
+            header("Location: /dashboard");
+            exit;
+
+        } catch (\Exception $e) {
+            // Log for production, show for development
+            echo "Generation Logic Error: " . $e->getMessage();
+            exit;
+        }
     }
 
-    public function updatePlan()
+    public function updateAdaptivePlan()
     {
-        // ...
-    }
+        if (session_status() === PHP_SESSION_NONE)
+            session_start();
+        $user = User::getAuthUser();
+        if (!$user)
+            exit('Unauthorized');
 
-    public function getPlan()
-    {
-        // ...
-    }
+        try {
+            // Get current incomplete tasks
+            $allTasks = Task::getAll($user['id']);
+            $currentTasks = array_filter($allTasks, fn($t) => !$t['is_completed']);
 
-    public function getSkills()
-    {
-        // ...
-    }
+            // Get user current status (mocking this as it would come from a POST form usually)
+            $userStatus = [
+                'blocked' => $_POST['blocked_reason'] ?? 'none',
+                'time_available' => $_POST['time_minutes'] ?? 120,
+                'completed_count' => count(array_filter($allTasks, fn($t) => $t['is_completed']))
+            ];
 
-    public function getProgress()
-    {
-        // ...
+            $newTasksRaw = AI::adaptDailyPlan($currentTasks, $userStatus);
+            $newTasks = json_decode($newTasksRaw, true);
+
+            if ($newTasks && is_array($newTasks)) {
+                // Delete existing incomplete tasks and replace with adaptive ones
+                // (Pragmatic approach: only replace future tasks)
+                foreach ($newTasks as $task) {
+                    $desc = $task['task_title'] . ": " . $task['description'];
+                    // Plan ID needs to be fetched
+                    $roadmap = Roadmap::getRoadmap($user['id']);
+                    if ($roadmap) {
+                        $plan = Plan::getPlan($user['id'], $roadmap['id']);
+                        if ($plan) {
+                            Task::create($user['id'], (int) $plan['id'], $desc);
+                        }
+                    }
+                }
+            }
+
+            header("Location: /dashboard");
+        } catch (\Exception $e) {
+            echo "Adaptation Error: " . $e->getMessage();
+        }
     }
 }
