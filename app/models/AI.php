@@ -127,9 +127,65 @@ class AI
     public function generatePlans(){
 
     }
-    public function generateTasks(){
+
+
+    public function generateTasks(array $responses): string{    
+
+        self::init();
+
+        if(empty(self::$apiKey)){
+            return  json_encode(['error' => 'Hugging Face Token not configured in .env file.']);
+        }
+
+        $userData="";
+        foreach($responses as $response){
+            $userData .= "- Question: " . ($response['question_text'] ?? 'N/A') . "\n";
+            $userData .= "  Answer: " . ($response['answer_text'] ?? 'N/A') . "\n";
+        }
+
+        $prompt = "As a software task planner, generate tasks for a user based on these responses:\n" . $userData;
+
+        $messages = [
+            ['role' => 'system', 'content' => 'You are an expert learning path architect.'],
+            ['role' => 'user', 'content' => $prompt]
+        ];
+
+        $data = [
+            'model' => self::$model,
+            'messages' => $messages,
+            'temperature' => 0.7,
+            'max_tokens' => 2000
+        ];
+
+        $ch = curl_init(self::$endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . self::$apiKey
+        ]);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200) {
+            return "Error: AI generation failed with status " . $httpCode;
+        }
+
+        $responseData = json_decode($response, true);
+        return $responseData['choices'][0]['message']['content'] ?? 'Error: No response from AI.';
 
     }
+
+    
+
+
+
+
+
     public function showOpportunities(){
         
     }

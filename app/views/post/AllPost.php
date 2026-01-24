@@ -10,6 +10,8 @@
                         <p class="text-xs text-gray-500"><?= date('d M Y H:i', strtotime($post['created_at'])) ?></p>
                     </div>
                 </div>
+                <p class="text-gray-700"><?= htmlspecialchars($post['title']) ?></p>
+                <p class="text-gray-700"><?= htmlspecialchars($post['type']) ?></p>
                 <p class="text-gray-700"><?= htmlspecialchars($post['content']) ?></p>
             </div>
             <?php endforeach; ?>

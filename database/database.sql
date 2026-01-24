@@ -135,9 +135,9 @@ CREATE TABLE skills (
 CREATE TABLE posts (
     id SERIAL PRIMARY KEY,
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
-    -- title VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
-    -- type post_type_enum NOT NULL,
+    type post_type_enum NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

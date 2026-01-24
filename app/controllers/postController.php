@@ -9,6 +9,8 @@ class postController extends Controller{
 
     public function addPost(){
         if($_SERVER['REQUEST_METHOD']==='POST'){
+            $title=$_POST['title'];
+            $type=$_POST['type'];
             $content=$_POST['content'];
             $post = Post::addPost($content);
             $this->redirect('/posts'); 

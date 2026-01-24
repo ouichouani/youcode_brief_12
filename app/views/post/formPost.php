@@ -3,10 +3,23 @@
 
     <form method="POST" action="/posts/create">
         <textarea
+            name="title"
+            rows="4"
+            placeholder="title"
+            class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" required></textarea>
+
+        <textarea
+            name="type"
+            rows="4"
+            placeholder="type"
+            class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" required></textarea>
+
+        <textarea
             name="content"
             rows="4"
             placeholder="Write something to interact with the community..."
             class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" required></textarea>
+
 
         <div class="flex justify-end mt-4">
             <button

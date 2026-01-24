@@ -6,7 +6,7 @@ use App\Core\Database;
 class Post {
     public static function addPost($content){
         $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("INSERT INTO Post(content) VALUES (?)");
+        $stmt = $db->prepare("INSERT INTO Post(content,title,type) VALUES (?)");
         return $stmt->execute([$content]);
     }
 
