@@ -20,32 +20,21 @@ use DateTime;
 class Dashboard extends Controller
 {
 
-    // private AI $AI ; 
-    // private User $user ; 
-
-
-    public function __construct()
-    {
-        // $this->AI = new AI() ;
-        // $this->user = User::getInstence() ;
-    }
-
-
     public function show()
     {
 
         try {
 
+            if (!User::isAuthenticated()) $this->view('user/login') ;
             $user = User::getAuthUser();
-            if (!$user) $this->view('user/login') ;
+            $user_id = User::getAuthUser()['id'];
 
-            $Roadmap = Roadmap::getRoadmap($user['id']);
+            $Roadmap = Roadmap::getRoadmap($user_id);
             if (!$Roadmap) throw new \Exception('somthing wrong in roadmap fetching');
 
-            $plan = Plan::getLast($user['id'], $Roadmap['id']);
-            // if (!$plan) throw new \Exception('somthing wrong in plan fetching');
+            $plan = Plan::getLast($user_id, $Roadmap['id']);
 
-            $skills = Skill::getAll($user['id'], $Roadmap['id']);
+            $skills = Skill::getAll($user_id, $Roadmap['id']);
 
             $progress = $plan['completion_percentage'];
 
@@ -82,7 +71,7 @@ class Dashboard extends Controller
                 
                 // CREATE ANSWERS ARRAY ---------------------------------
                 $answers_content = [];
-                $answers = Answer::getAll($user['id']);
+                $answers = Answer::getAll($user_id);
                 
                 if (!empty($answers)) {
                     foreach ($answers as $an) {
@@ -93,12 +82,7 @@ class Dashboard extends Controller
 
                 // GENERATE 3 OPPORTUNITES AND INSERT THEM IN DATABASE ---------------------------------
                     
-                $opp = AI::generateOpportunities($skills_name, $Roadmap['content'], $questions_content, $answers_content);
-                $data = json_decode($opp ,true) ;
 
-                Opportunity::save($data[0]) ;
-                Opportunity::save($data[1]) ;
-                Opportunity::save($data[2]) ;
             }
 
             $opportunities = Opportunity::getAll();
@@ -120,30 +104,5 @@ class Dashboard extends Controller
             echo $e->getMessage();
             exit;
         }
-    }
-
-    public function createPlan()
-    {
-        // ...
-    }
-
-    public function updatePlan()
-    {
-        // ...
-    }
-
-    public function getPlan()
-    {
-        // ...
-    }
-
-    public function getSkills()
-    {
-        // ...
-    }
-
-    public function getProgress()
-    {
-        // ...
     }
 }

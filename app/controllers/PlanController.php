@@ -16,7 +16,20 @@ class PlanController extends Controller{
 
         $roadmap = Roadmap::getRoadmap($user_id) ;        
         Plan::create($user_id , $roadmap) ;
-        header('location: ../dashboard') ;
+        header('location: '. APP_ROOT .'../dashboard') ;
+        exit ;
         
+    }
+
+    public function planHistory(){
+
+        if (!User::isAuthenticated()) $this->view('user/login') ;
+        $user_id = User::getAuthUser()['id'] ;
+        $user = User::getAuthUser() ;
+        $roadmap_id = Roadmap::getRoadmap($user_id)['id'] ;        
+
+        $plans = Plan::getALL($user_id ,$roadmap_id) ;
+        $this->view('plan/history' , ['plans' => $plans , 'user' => $user]) ;
+
     }
 }

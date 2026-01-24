@@ -5,41 +5,38 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Models\Questionnaire;
 use App\models\Roadmap;
+use App\models\Answer;
 use App\models\AI;
 use App\Models\Plan;
-use DateTime;
+use App\Models\User;
 
 class QuestionnaireController extends Controller
 {
-    private Questionnaire $model;
 
-    public function __construct()
-    {
-        $this->model = new Questionnaire();
-    }
 
     public function askQuest()
     {
-        $questions = $this->model->getAllQuest();
+        $questions = Questionnaire::getAll();
         $this->view("questionnaire/questionnaire", ['questions' => $questions]);
     }
 
     public function captureResponse()
     {
+
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        if(!isset($_SESSION['user'])){
+        if(!User::isAuthenticated()){
             $_SESSION['error'] = 'not authenticated' ;
-            return ;
+            $this->view('user/login') ;
         }
 
-        $userId = $_SESSION['user']['id'] ;
+        $userId = User::getAuthUser()['id'] ;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['responses'])) {
             $responses = $_POST['responses'];
-            if ($this->model->saveResponse($userId, $responses)) {
+            if (Answer::saveResponse($userId, $responses)) {
                 header("Location: " . APP_ROOT . "/roadmap/generate");
                 exit;
             }
@@ -50,39 +47,35 @@ class QuestionnaireController extends Controller
 
     public function generateRoadmap()
     {
+
+        
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        if(!isset($_SESSION['user'])){
+
+        if(!User::isAuthenticated()){
             $_SESSION['error'] = 'not authenticated' ;
-            return ;
+            $this->view('user/login') ;
         }
+
+        $userId = User::getAuthUser()['id'] ;
+        $responses = Answer::getAll($userId) ;
+        $questions = Questionnaire::getAll() ;
+
+        $roadmapContent = AI::generateRoadmap($questions , $responses);
         
-        $userId = $_SESSION['user']['id'] ;
+        // SAVE THE ROADMAP IN DATABAE
+        Roadmap::saveRoadmap($userId , $roadmapContent) ;
 
-        $roadmapContent = $this->model->generateRoadmapForUser($userId);
+        //GET ROADMAP FROM DATABASE
+        $roadmap = Roadmap::getRoadmap($userId) ;
 
-        $roadmapModel = new Roadmap();
-        $roadmapModel->saveRoadmap($userId, $roadmapContent);
-
-        Plan::create() ;
+        // CREATE PLAN BASED ON ROADMAP
+        Plan::create($userId , $roadmap) ;
 
         header("Location: " . APP_ROOT . "/roadmap/show");
         exit;
     }
 
-    // protected function render($view, $data = [])
-    // {
-    //     extract($data);
-    //     ob_start();
-    //     require dirname(__DIR__) . "/views/$view.php";
-    //     $content = ob_get_clean();
-
-    //     ob_start();
-    //     require dirname(__DIR__) . "/views/layout/layout.php";
-    //     $layout = ob_get_clean();
-
-    //     echo str_replace('{{content}}', $content, $layout);
-    // }
 }

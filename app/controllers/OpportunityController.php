@@ -10,12 +10,6 @@ use App\Models\User;
 
 class OpportunityController extends Controller
 {
-    // public function showOp(){
-    //     $this->view("opportinity/index");
-    // }
-    // List toutes les opportunities
-
-
 
     public function showAll()
     {
@@ -23,11 +17,11 @@ class OpportunityController extends Controller
         $this->view("opportinity/index", ['opportunities' => $opportunities]);
     }
 
-    // Voir details d'une opportunity
     public function show($id)
     {
         $opportunity = Opportunity::getById($id);
-        // require_once __DIR__ . "/../views/opportinity/show.php";
+        $this->view("opportinity/index", ['opportunities' => $opportunity]);
+
     }
 
 

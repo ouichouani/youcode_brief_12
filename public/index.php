@@ -64,6 +64,7 @@ $router->get('/roadmap/generate', [QuestionnaireController::class, "generateRoad
 $router->get('/roadmap/show', [RoadmapController::class, "renderRoadmap"]);
 
 $router->get('/plan/generate', [PlanController::class, "generatePlan"]);
+$router->get('/plan/history', [PlanController::class, "planHistory"]);
 
 // Placeholder routes for navigation links
 // $router->get('/opportunities', [OpportunityController::class, "showAll"]);

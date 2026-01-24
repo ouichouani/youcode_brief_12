@@ -9,7 +9,6 @@ use App\Models\User;
 class Opportunity
 {
     //get tout les Opportunity 
-
     public static function getAll()
     {
         $connection = Database::getInstance()->getConnection();
@@ -47,11 +46,3 @@ class Opportunity
         return true ;
     }
 }
-
-// id SERIAL PRIMARY KEY,
-//     user_id BIGINT REFERENCES users (id) ON DELETE SET NULL ,
-//     title VARCHAR(255) NOT NULL,
-//     description TEXT,
-//     estimated_income NUMERIC(10, 2),
-//     external_link TEXT,
-//     market_source market_source_enum,

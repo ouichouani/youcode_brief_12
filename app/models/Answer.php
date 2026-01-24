@@ -20,7 +20,7 @@ class Answer
 
 
 
-    public function saveResponse($userId, array $responses): bool
+    public static function saveResponse($userId, array $responses): bool
     {
         $connection = Database::getInstance()->getConnection();
         try {
