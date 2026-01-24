@@ -11,7 +11,7 @@ use App\Models\Skill;
 use App\Models\User;
 use App\Models\Questionnaire;
 use App\Models\Task;
-
+use Exception;
 class Dashboard extends Controller
 {
 
@@ -91,7 +91,7 @@ class Dashboard extends Controller
             ];
 
             $this->view('dashboard/dashboard', $data);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo $e->getMessage();
             exit;
         }
@@ -115,13 +115,13 @@ class Dashboard extends Controller
             $roadmapData = json_decode($roadmapRaw, true);
 
             if (json_last_error() !== JSON_ERROR_NONE || !isset($roadmapData['phases'])) {
-                throw new \Exception("Invalid Roadmap AI output. Ensure tokens and model are correct.");
+                throw new Exception("Invalid Roadmap AI output. Ensure tokens and model are correct.");
             }
 
             // 2. Save Master Roadmap
             $roadmapId = Roadmap::saveRoadmap($user['id'], $roadmapRaw);
             if (!$roadmapId)
-                throw new \Exception("Persistence failure: Roadmap.");
+                throw new Exception("Persistence failure: Roadmap.");
 
             // 3. Skill Extraction Engine
             $skillsRaw = AI::extractSkills($roadmapRaw);
@@ -129,10 +129,26 @@ class Dashboard extends Controller
 
             if (isset($skillsData['skills'])) {
                 foreach ($skillsData['skills'] as $skill) {
-                    // Assuming Skill model has name, category, level, description
-                    // We'll map them to existing create or expand it
-                    Skill::create($user['id'], (int) $roadmapId, $skill['name']);
-                    // Note: If Skill::create only takes name, we might want to store more in a 'meta' column later
+                    $cat = 'other';
+                    if (isset($skill['category'])) {
+                        $c = strtolower($skill['category']);
+                        if (strpos($c, 'ai') !== false)
+                            $cat = 'AI';
+                        elseif (strpos($c, 'business') !== false)
+                            $cat = 'business';
+                        elseif (strpos($c, 'dev') !== false || strpos($c, 'tech') !== false)
+                            $cat = 'dev';
+                        elseif (strpos($c, 'marketing') !== false)
+                            $cat = 'marketing';
+                    }
+
+                    Skill::create(
+                        $user['id'],
+                        (int) $roadmapId,
+                        $skill['name'],
+                        $skill['description'] ?? null,
+                        $cat
+                    );
                 }
             }
 
@@ -154,12 +170,17 @@ class Dashboard extends Controller
 
             if (isset($oppsData['opportunities'])) {
                 foreach ($oppsData['opportunities'] as $opp) {
+                    $incomeStr = $opp['estimated_monthly_income'] ?? '0';
+                    // Extract the first number found in the string (handles "2000-5000" -> 2000)
+                    preg_match('/\d+/', str_replace([',', ' '], '', $incomeStr), $matches);
+                    $income = isset($matches[0]) ? (int) $matches[0] : 0;
+
                     Opportunity::create(
                         $user['id'],
                         $opp['title'],
                         $opp['action_plan_summary'] . " (Platform: " . $opp['platform'] . ")",
-                        (int) preg_replace('/[^0-9]/', '', $opp['estimated_monthly_income']),
-                        $opp['type']
+                        $income,
+                        $opp['type'] ?? 'other'
                     );
                 }
             }
@@ -167,7 +188,7 @@ class Dashboard extends Controller
             header("Location: /dashboard");
             exit;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Log for production, show for development
             echo "Generation Logic Error: " . $e->getMessage();
             exit;
@@ -214,7 +235,7 @@ class Dashboard extends Controller
             }
 
             header("Location: /dashboard");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo "Adaptation Error: " . $e->getMessage();
         }
     }

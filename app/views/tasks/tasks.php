@@ -15,7 +15,7 @@
             <form method="POST" action="<?= APP_ROOT ?>/markAsDone">
                 <input type="hidden" name="id" value="<?= $task['id'] ?>">
 
-                <?php if ($task['status'] === 'done'): ?>
+                <?php if ($task['status'] === 'completed' || ($task['is_completed'] ?? 0) == 1): ?>
                     <button
                         style="background:#e5e7eb;color:#1f2937;border:none;padding:8px 14px;border-radius:6px;cursor:not-allowed;"
                         disabled>

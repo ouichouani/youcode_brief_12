@@ -17,11 +17,11 @@ class Skill
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public static function create(int $userId, int $roadmapId, string $name): bool
+    public static function create(int $userId, int $roadmapId, string $name, string $description = null, string $category = null): bool
     {
         $connection = Database::getInstance()->getConnection();
-        $stmt = $connection->prepare("INSERT INTO skills (user_id, roadmap_id, name) VALUES (?, ?, ?)");
-        return $stmt->execute([$userId, $roadmapId, $name]);
+        $stmt = $connection->prepare("INSERT INTO skills (user_id, roadmap_id, name, description, category) VALUES (?, ?, ?, ?, ?)");
+        return $stmt->execute([$userId, $roadmapId, $name, $description, $category]);
     }
 
 }
