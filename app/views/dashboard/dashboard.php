@@ -92,9 +92,11 @@
                                         </div>
                                         <div>
                                             <h4 class="text-sm font-bold text-slate-800">
-                                                <?= htmlspecialchars($phase['phase_title']) ?></h4>
+                                                <?= htmlspecialchars($phase['phase_title']) ?>
+                                            </h4>
                                             <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">
-                                                <?= htmlspecialchars($phase['objective']) ?></p>
+                                                <?= htmlspecialchars($phase['objective']) ?>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -200,17 +202,19 @@
                                 </p>
                             <?php else: ?>
                                 <?php foreach (array_slice($opportunities, 0, 3) as $op): ?>
-                                    <a href="<?= APP_ROOT ?>/opportunity/<?= $op['id'] ?>"
+                                    <a href="<?= APP_ROOT ?>/opportinity?id=<?= $op['id'] ?>"
                                         class="block p-5 bg-slate-800/50 rounded-2xl border border-slate-700 hover:border-indigo-500 transition-all group/card">
                                         <div class="flex justify-between items-start mb-3">
                                             <h4
                                                 class="text-xs font-bold text-white group-hover/card:text-indigo-400 transition-colors">
-                                                <?= htmlspecialchars($op['title']) ?></h4>
+                                                <?= htmlspecialchars($op['title']) ?>
+                                            </h4>
                                             <span
                                                 class="text-[9px] font-black text-emerald-400">$<?= number_format($op['estimated_income'] ?? 0) ?></span>
                                         </div>
                                         <p class="text-slate-400 text-[10px] line-clamp-2 leading-relaxed">
-                                            <?= htmlspecialchars($op['description']) ?></p>
+                                            <?= htmlspecialchars($op['description']) ?>
+                                        </p>
                                     </a>
                                 <?php endforeach; ?>
                                 <a href="<?= APP_ROOT ?>/opportunities"

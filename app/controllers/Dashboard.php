@@ -104,7 +104,7 @@ class Dashboard extends Controller
 
         $user = User::getAuthUser();
         if (!$user) {
-            header("Location: /login");
+            header("Location: " . APP_ROOT . "/login");
             exit;
         }
 
@@ -180,12 +180,13 @@ class Dashboard extends Controller
                         $opp['title'],
                         $opp['action_plan_summary'] . " (Platform: " . $opp['platform'] . ")",
                         $income,
-                        $opp['type'] ?? 'other'
+                        $opp['type'] ?? 'other',
+                        $opp['url'] ?? null
                     );
                 }
             }
 
-            header("Location: /dashboard");
+            header("Location: " . APP_ROOT . "/dashboard");
             exit;
 
         } catch (Exception $e) {
@@ -234,7 +235,7 @@ class Dashboard extends Controller
                 }
             }
 
-            header("Location: /dashboard");
+            header("Location: " . APP_ROOT . "/dashboard");
         } catch (Exception $e) {
             echo "Adaptation Error: " . $e->getMessage();
         }
