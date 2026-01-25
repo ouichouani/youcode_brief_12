@@ -81,6 +81,7 @@ $router->post('/profile/password', [ProfileController::class, "changePassword"])
 
 // Placeholder routes
 $router->get('/opportunities', [OpportunityController::class, "showAll"]);
+$router->get('/opportinity', [OpportunityController::class, "show"]);
 $router->get('/skills', [HomeController::class, "skills"]);
 
 $router->resolve();

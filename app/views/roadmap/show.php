@@ -17,7 +17,7 @@
                     </svg>
                     Imprimer
                 </button>
-                <a href="/questionnaire"
+                <a href="<?= APP_ROOT ?>/questionnaire"
                     class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-all flex items-center shadow-lg shadow-indigo-500/20">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -25,7 +25,7 @@
                     </svg>
                     Refaire
                 </a>
-                <a href="/dashboard"
+                <a href="<?= APP_ROOT ?>/dashboard"
                     class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all flex items-center shadow-lg shadow-green-500/20">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

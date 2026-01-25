@@ -124,7 +124,7 @@ class AuthController extends Controller
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->view("user/login");
 
-            $this->view("user/login");
+            // $this->view("user/login");
 
             exit;
         }
@@ -200,7 +200,7 @@ class AuthController extends Controller
     public function forgotPassword()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /forgot-password');
+            header('Location: '. APP_ROOT .'/forgot-password');
             exit;
         }
 
@@ -208,13 +208,13 @@ class AuthController extends Controller
 
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->storeErrorMessage("Please provide a valid email address");
-            header('Location: /forgot-password');
+            header('Location: '. APP_ROOT .'/forgot-password');
             exit;
         }
 
         if (!User::emailExists($email)) {
             $this->storeErrorMessage("No account found with this email address");
-            header('Location: /forgot-password');
+            header('Location: '. APP_ROOT .'/forgot-password');
             exit;
         }
 
@@ -225,19 +225,20 @@ class AuthController extends Controller
             $this->sendPasswordResetEmail($email, $token);
 
             $this->storeSuccessMessage("Password reset instructions have been sent to your email.");
-            header('Location: /login');
+            header('Location: '. APP_ROOT .'/login');
             exit;
         } else {
             $this->storeErrorMessage("Failed to process your request. Please try again.");
-            header('Location: /forgot-password');
+            header('Location: '. APP_ROOT .'/forgot-password');
             exit;
         }
     }
 
-    public function showResetPassword($token = null)
+    public function showResetPassword()
     {
+        $token = $_GET['token'] ?? null;
         if (!$token) {
-            header('Location: /forgot-password');
+            header('Location: '. APP_ROOT .'/forgot-password');
             exit;
         }
 
@@ -245,7 +246,7 @@ class AuthController extends Controller
 
         if (!$user) {
             $this->storeErrorMessage("Invalid or expired reset token");
-            header('Location: /forgot-password');
+            header('Location: '. APP_ROOT .'/forgot-password');
             exit;
         }
 
@@ -255,7 +256,7 @@ class AuthController extends Controller
     public function resetPassword()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /forgot-password');
+            header('Location: '. APP_ROOT .'/forgot-password');
             exit;
         }
 
@@ -265,7 +266,7 @@ class AuthController extends Controller
 
         if (empty($token)) {
             $this->storeErrorMessage("Invalid reset token");
-            header('Location: /forgot-password');
+            header('Location: '. APP_ROOT .'/forgot-password');
             exit;
         }
 
@@ -288,17 +289,17 @@ class AuthController extends Controller
 
         if (!empty($errors)) {
             $this->storeValidationErrors($errors);
-            header('Location: /reset-password/' . $token);
+            header('Location: '. APP_ROOT .'/reset-password?token=' . $token);
             exit;
         }
 
         if (User::resetPasswordWithToken($token, $password)) {
             $this->storeSuccessMessage("Password has been reset successfully. Please login.");
-            header('Location: /login');
+            header('Location: '. APP_ROOT .'/login');
             exit;
         } else {
             $this->storeErrorMessage("Invalid or expired reset token");
-            header('Location: /forgot-password');
+            header('Location: '. APP_ROOT .'/forgot-password');
             exit;
         }
     }
@@ -306,7 +307,7 @@ class AuthController extends Controller
     private function sendPasswordResetEmail(string $email, string $token): bool
     {
         try {
-            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . "/reset-password/" . $token;
+            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . "/youcode_brief_12/reset-password?token=" . $token;
             $subject = "Password Reset Request - AI Revenue Generator";
             $body = "
             <!DOCTYPE html>

@@ -92,9 +92,11 @@
                                         </div>
                                         <div>
                                             <h4 class="text-sm font-bold text-slate-800">
-                                                <?= htmlspecialchars($phase['phase_title']) ?></h4>
+                                                <?= htmlspecialchars($phase['phase_title']) ?>
+                                            </h4>
                                             <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">
-                                                <?= htmlspecialchars($phase['objective']) ?></p>
+                                                <?= htmlspecialchars($phase['objective']) ?>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -114,7 +116,7 @@
                             <p class="text-slate-400 text-xs mt-1">Les étapes concrètes à accomplir dès maintenant.</p>
                         </div>
                         <span
-                            class="bg-indigo-50 text-indigo-600 text-[10px] font-black px-3 py-1 rounded-full uppercase"><?= count(array_filter($dbTasks, fn($t) => !$t['is_completed'])) ?>
+                            class="bg-indigo-50 text-indigo-600 text-[10px] font-black px-3 py-1 rounded-full uppercase"><?= count(array_filter($dbTasks, fn($t) => $t['status'] !== 'completed')) ?>
                             tâches restantes</span>
                     </div>
 
@@ -136,10 +138,10 @@
                         <?php else: ?>
                             <?php foreach ($dbTasks as $task): ?>
                                 <div
-                                    class="flex items-center justify-between p-5 rounded-2xl transition-all border <?= $task['is_completed'] ? 'bg-slate-50 border-transparent opacity-60' : 'bg-white border-slate-100 hover:border-indigo-200 hover:shadow-xl hover:-translate-y-1' ?>">
+                                    class="flex items-center justify-between p-5 rounded-2xl transition-all border <?= $task['status'] === 'completed' ? 'bg-slate-50 border-transparent opacity-60' : 'bg-white border-slate-100 hover:border-indigo-200 hover:shadow-xl hover:-translate-y-1' ?>">
                                     <div class="flex items-center space-x-4">
                                         <div class="flex-shrink-0">
-                                            <?php if ($task['is_completed']): ?>
+                                            <?php if ($task['status'] === 'completed'): ?>
                                                 <div
                                                     class="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-200">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +163,7 @@
                                         </div>
                                         <div>
                                             <p
-                                                class="text-sm font-bold <?= $task['is_completed'] ? 'text-slate-400 line-through' : 'text-slate-800' ?>">
+                                                class="text-sm font-bold <?= $task['status'] === 'completed' ? 'text-slate-400 line-through' : 'text-slate-800' ?>">
                                                 <?= htmlspecialchars($task['description']) ?>
                                             </p>
                                             <?php if (!empty($task['skill_name'])): ?>
@@ -172,7 +174,7 @@
                                             <?php endif; ?>
                                         </div>
                                     </div>
-                                    <?php if (!$task['is_completed']): ?>
+                                    <?php if ($task['status'] !== 'completed'): ?>
                                         <div class="hidden md:block">
                                             <span class="text-[9px] font-bold text-slate-300 italic">Action Prioritaire</span>
                                         </div>
@@ -200,17 +202,19 @@
                                 </p>
                             <?php else: ?>
                                 <?php foreach (array_slice($opportunities, 0, 3) as $op): ?>
-                                    <a href="<?= APP_ROOT ?>/opportunity/<?= $op['id'] ?>"
+                                    <a href="<?= APP_ROOT ?>/opportinity?id=<?= $op['id'] ?>"
                                         class="block p-5 bg-slate-800/50 rounded-2xl border border-slate-700 hover:border-indigo-500 transition-all group/card">
                                         <div class="flex justify-between items-start mb-3">
                                             <h4
                                                 class="text-xs font-bold text-white group-hover/card:text-indigo-400 transition-colors">
-                                                <?= htmlspecialchars($op['title']) ?></h4>
+                                                <?= htmlspecialchars($op['title']) ?>
+                                            </h4>
                                             <span
                                                 class="text-[9px] font-black text-emerald-400">$<?= number_format($op['estimated_income'] ?? 0) ?></span>
                                         </div>
                                         <p class="text-slate-400 text-[10px] line-clamp-2 leading-relaxed">
-                                            <?= htmlspecialchars($op['description']) ?></p>
+                                            <?= htmlspecialchars($op['description']) ?>
+                                        </p>
                                     </a>
                                 <?php endforeach; ?>
                                 <a href="<?= APP_ROOT ?>/opportunities"

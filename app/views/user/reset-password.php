@@ -25,7 +25,7 @@
                     </div>
                 <?php endif; ?>
 
-                <form action="/reset-password" method="POST" class="space-y-6">
+                <form action="<?= APP_ROOT ?>/reset-password" method="POST" class="space-y-6">
                     <input type="hidden" name="token" value="<?php echo htmlspecialchars($token ?? ''); ?>">
                     
                     <div>
@@ -55,7 +55,7 @@
                 </form>
 
                 <div class="mt-6 text-center">
-                    <a href="/login" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
+                    <a href="<?= APP_ROOT ?>/login" class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
                         <i class="fas fa-arrow-left mr-2"></i>
                         Back to Login
                     </a>

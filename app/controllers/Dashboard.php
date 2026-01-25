@@ -72,7 +72,7 @@ class Dashboard extends Controller
                     // or just pass dbTasks. I'll pass dbTasks.
                     $progress = $plan['completion_percentage'] ?? 0;
                     if (!empty($dbTasks)) {
-                        $completed = count(array_filter($dbTasks, fn($t) => $t['is_completed']));
+                        $completed = count(array_filter($dbTasks, fn($t) => $t['status'] === 'completed'));
                         $progress = round(($completed / count($dbTasks)) * 100);
                     }
                 }
@@ -104,7 +104,7 @@ class Dashboard extends Controller
 
         $user = User::getAuthUser();
         if (!$user) {
-            header("Location: /login");
+            header("Location: " . APP_ROOT . "/login");
             exit;
         }
 
@@ -180,12 +180,13 @@ class Dashboard extends Controller
                         $opp['title'],
                         $opp['action_plan_summary'] . " (Platform: " . $opp['platform'] . ")",
                         $income,
-                        $opp['type'] ?? 'other'
+                        $opp['type'] ?? 'other',
+                        $opp['url'] ?? null
                     );
                 }
             }
 
-            header("Location: /dashboard");
+            header("Location: " . APP_ROOT . "/dashboard");
             exit;
 
         } catch (Exception $e) {
@@ -206,13 +207,13 @@ class Dashboard extends Controller
         try {
             // Get current incomplete tasks
             $allTasks = Task::getAll($user['id']);
-            $currentTasks = array_filter($allTasks, fn($t) => !$t['is_completed']);
+            $currentTasks = array_filter($allTasks, fn($t) => $t['status'] !== 'completed');
 
             // Get user current status (mocking this as it would come from a POST form usually)
             $userStatus = [
                 'blocked' => $_POST['blocked_reason'] ?? 'none',
                 'time_available' => $_POST['time_minutes'] ?? 120,
-                'completed_count' => count(array_filter($allTasks, fn($t) => $t['is_completed']))
+                'completed_count' => count(array_filter($allTasks, fn($t) => $t['status'] === 'completed'))
             ];
 
             $newTasksRaw = AI::adaptDailyPlan($currentTasks, $userStatus);
@@ -234,7 +235,7 @@ class Dashboard extends Controller
                 }
             }
 
-            header("Location: /dashboard");
+            header("Location: " . APP_ROOT . "/dashboard");
         } catch (Exception $e) {
             echo "Adaptation Error: " . $e->getMessage();
         }
