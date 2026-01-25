@@ -73,10 +73,10 @@
                             </div>
                         </div>
 
-                        <button
-                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all uppercase tracking-widest text-xs">
+                        <a href="<?= $opportunity['external_link'] ?>"
+                            class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl shadow-lg shadow-indigo-200 transition-all uppercase tracking-widest text-xs">
                             Postuler maintenant
-                        </button>
+                        </a>
                         <p class="text-center text-[10px] text-slate-400 font-medium">Lien externe vers la plateforme
                         </p>
                     </div>
