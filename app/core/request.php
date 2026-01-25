@@ -23,6 +23,17 @@ class Request {
         }
 
     }
-
+    public function getBody(){
+        $path = $_SERVER['REQUEST_URI'] ; 
+        $position = strpos($path, '?');
+        if($position === false){
+            return [];
+        }else{
+        // return explode('&' ,str_replace('=' ,'=>' , substr($path ,$postion+1))) ;
+            $queryString = substr($path, $position + 1);
+            parse_str($queryString, $result);
+            return $result ;
+        }        
+    }
 
 }

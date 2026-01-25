@@ -25,10 +25,11 @@ class OpportunityController extends Controller
         $this->view("opportinity/index", ['opportunities' => $opportunities]);
     }
 
-    public function show($id)
+    public function show(array $params)
     {
         $this->checkAuth();
-        $opportunity = Opportunity::getById($id);
+        $opportunity = Opportunity::getById($params["id"]);
         $this->view("opportinity/show", ['opportunity' => $opportunity]);
     }
+
 }

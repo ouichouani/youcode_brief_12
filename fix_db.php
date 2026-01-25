@@ -23,9 +23,16 @@ function addColumnIfMissing($db, $table, $column, $type)
 // Fix skills table
 addColumnIfMissing($db, 'skills', 'roadmap_id', 'INTEGER');
 
+// Fix opportunities table
+addColumnIfMissing($db, 'opportunities', 'difficulty', "VARCHAR(50) DEFAULT 'medium'");
+
 // Fix tasks table
 addColumnIfMissing($db, 'tasks', 'user_id', 'INTEGER');
 addColumnIfMissing($db, 'tasks', 'skill_name', 'VARCHAR(255)');
-addColumnIfMissing($db, 'tasks', 'is_completed', 'SMALLINT DEFAULT 0');
+
+// Fix posts table (Community features)
+addColumnIfMissing($db, 'posts', 'status', "VARCHAR(20) DEFAULT 'approved'");
+addColumnIfMissing($db, 'posts', 'ai_score', 'INTEGER DEFAULT 0');
+addColumnIfMissing($db, 'posts', 'is_high_value', 'SMALLINT DEFAULT 0');
 
 echo "Database fix completed.\n";
