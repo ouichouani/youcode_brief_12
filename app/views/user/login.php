@@ -35,12 +35,14 @@
                     </div>
                 <?php endif; ?>
 
-                <form action="/login" method="POST" class="space-y-6">
+                <form action="<?= APP_ROOT ?>/login" method="POST" class="space-y-6">
                     <div>
                         <label class="block text-gray-700 text-sm font-medium mb-2" for="email">
                             <i class="fas fa-envelope mr-2"></i>Email Address
                         </label>
-                        <input type="email" id="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="you@example.com">
+                        <input type="email" id="email" name="email" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            placeholder="you@example.com">
                     </div>
 
                     <div>
@@ -48,20 +50,25 @@
                             <label class="block text-gray-700 text-sm font-medium" for="password">
                                 <i class="fas fa-lock mr-2"></i>Password
                             </label>
-                            <a href="/forgot-password" class="text-sm text-indigo-600 hover:text-indigo-800">
+                            <a href="<?= APP_ROOT ?>/forgot-password"
+                                class="text-sm text-indigo-600 hover:text-indigo-800">
                                 Forgot password?
                             </a>
                         </div>
-                        <input type="password" id="password" name="password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" placeholder="••••••••">
+                        <input type="password" id="password" name="password" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                            placeholder="••••••••">
                     </div>
                     <div class="flex items-center">
-                        <input type="checkbox" id="remember" name="remember" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <input type="checkbox" id="remember" name="remember"
+                            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                         <label for="remember" class="ml-2 block text-sm text-gray-700">
                             Remember me for 30 days
                         </label>
                     </div>
 
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
+                    <button type="submit"
+                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300">
                         <i class="fas fa-sign-in-alt mr-2"></i>Sign In
                     </button>
                 </form>
@@ -73,7 +80,7 @@
                 <div class="text-center">
                     <p class="text-gray-600">
                         Don't have an account?
-                        <a href="/register" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                        <a href="<?= APP_ROOT ?>/register" class="text-indigo-600 hover:text-indigo-800 font-medium">
                             <i class="fas fa-user-plus mr-1"></i>Create Account
                         </a>
                     </p>

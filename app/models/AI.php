@@ -16,88 +16,27 @@ class AI
         self::$model = $_ENV['HF_MODEL'] ?? getenv('HF_MODEL') ?: 'mistralai/Mistral-7B-Instruct-v0.3';
     }
 
-    public static function generateResponse(string $message)
+    /**
+     * Core generation method with strict JSON enforcement
+     */
+    public static function generate(string $prompt, float $temperature = 0.7): string
     {
         self::init();
 
         if (empty(self::$apiKey)) {
-            return json_encode(['error' => 'Hugging Face Token not configured in .env file.']);
+            return json_encode(['error' => 'AI Configuration missing.']);
         }
 
         $messages = [
-            ['role' => 'system', 'content' => 'You are a helpful and friendly AI assistant.']
-        ];
-
-
-
-        $messages[] = ['role' => 'user', 'content' => $message];
-
-
-        $data = [
-            'model' => self::$model,
-            'messages' => $messages,
-            'temperature' => 0.7,
-            'max_tokens' => 500
-        ];
-
-        $ch = curl_init(self::$endpoint);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . self::$apiKey
-        ]);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
-        curl_close($ch);
-
-        if ($response === false) {
-            return json_encode(['error' => 'cURL Error: ' . $curlError]);
-        }
-
-        $responseData = json_decode($response, true);
-
-        if ($httpCode !== 200) {
-            $errorMessage = $responseData['error'] ?? 'Hugging Face API returned an error.';
-            if (is_array($errorMessage)) {
-                $errorMessage = json_encode($errorMessage);
-            }
-            return json_encode(['error' => 'Hugging Face API Error: ' . $errorMessage]);
-        }
-
-        return $responseData['choices'][0]['message']['content'] ?? '';
-    }
-
-    public function generateRoadmap(array $responses): string
-    {
-        self::init();
-        
-        if (empty(self::$apiKey)) {
-            return "Error: Hugging Face Token not configured.";
-        }
-
-        $userData = "";
-        foreach ($responses as $response) {
-            $userData .= "- Question: " . ($response['question_text'] ?? 'N/A') . "\n";
-            $userData .= "  Answer: " . ($response['answer_text'] ?? 'N/A') . "\n";
-        }
-
-        $prompt = "As an AI career and learning coach, generate a detailed learning roadmap for a user based on the following questionnaire responses:\n\n" . $userData . "\n\nThe roadmap should include:\n1. A clear goal statement.\n2. Key milestones with specific topics to learn.\n3. Estimated duration for each milestone.\n4. Recommended resources.\n\nFormat the output in clear Markdown with headers and bullet points.";
-
-        $messages = [
-            ['role' => 'system', 'content' => 'You are an expert learning path architect.'],
+            ['role' => 'system', 'content' => 'You are a deterministic AI specialized in SaaS business automation. Output ONLY raw valid JSON. No markdown, no triple backticks, no explanations.'],
             ['role' => 'user', 'content' => $prompt]
         ];
 
         $data = [
             'model' => self::$model,
             'messages' => $messages,
-            'temperature' => 0.7,
-            'max_tokens' => 2000
+            'temperature' => $temperature,
+            'max_tokens' => 3000
         ];
 
         $ch = curl_init(self::$endpoint);
@@ -115,22 +54,138 @@ class AI
         curl_close($ch);
 
         if ($httpCode !== 200) {
-            return "Error: AI generation failed with status " . $httpCode;
+            return json_encode(['error' => 'AI Service Error: ' . $httpCode]);
         }
 
         $responseData = json_decode($response, true);
-        return $responseData['choices'][0]['message']['content'] ?? 'Error: No response from AI.';
-    }
-    public function generateSkills(){
+        $content = $responseData['choices'][0]['message']['content'] ?? '{}';
 
-    }
-    public function generatePlans(){
+        // Sanitize: strip potential markdown fences if model ignores system instructions
+        $content = preg_replace('/^```json\s*|```$/m', '', $content);
 
+        return trim($content);
     }
-    public function generateTasks(){
 
+    /**
+     * 1. Roadmap Generation Logic
+     */
+    public static function generateStandardRoadmap(array $userProfile, ?string $selectedOpportunity = null): string
+    {
+        $profileStr = json_encode($userProfile);
+        $oppStr = $selectedOpportunity ? "Target Opportunity: $selectedOpportunity" : "General adaptive growth";
+
+        $prompt = "Generate a professional income generation roadmap.
+                   User Profile: $profileStr
+                   $oppStr
+                   
+                   Return STRICT JSON:
+                   {
+                     \"roadmap_title\": \"string\",
+                     \"target_income\": \"string\",
+                     \"duration_weeks\": integer,
+                     \"phases\": [
+                       {
+                         \"phase_title\": \"string\",
+                         \"objective\": \"string\",
+                         \"tasks\": [
+                           {
+                             \"day\": integer,
+                             \"task_title\": \"string\",
+                             \"description\": \"string\",
+                             \"estimated_time_minutes\": integer,
+                             \"skill\": \"string\",
+                             \"deliverable\": \"string\"
+                           }
+                         ]
+                       }
+                     ]
+                   }";
+
+        return self::generate($prompt, 0.7);
     }
-    public function showOpportunities(){
-        
+
+    /**
+     * 2. Skill Extraction Engine
+     */
+    public static function extractSkills(string $roadmapJson): string
+    {
+        $prompt = "Extract all unique skills from this roadmap JSON. Categorize and assign levels.
+                   Roadmap: $roadmapJson
+                   
+                   Return STRICT JSON:
+                   {
+                     \"skills\": [
+                       {
+                         \"name\": \"string\",
+                         \"category\": \"Technical | Business | AI | Soft Skills\",
+                         \"level\": \"Beginner | Intermediate | Advanced\",
+                         \"description\": \"string\"
+                       }
+                     ]
+                   }";
+
+        return self::generate($prompt, 0.3);
+    }
+
+    /**
+     * 3. Opportunity Matching
+     */
+    public static function matchOpportunities(array $skills): string
+    {
+        $skillsStr = implode(", ", array_column($skills, 'name'));
+        $prompt = "Identify 5 REALISTIC online income opportunities (Upwork, Fiverr, Malt, LinkedIn, IndieHackers) for these skills: $skillsStr.
+                   
+                   Return STRICT JSON:
+                   {
+                     \"opportunities\": [
+                       {
+                         \"title\": \"string\",
+                         \"type\": \"Freelance | Job | Business\",
+                         \"required_skills\": [],
+                         \"estimated_monthly_income\": \"string\",
+                         \"platform\": \"string\",
+                         \"action_plan_summary\": \"string\"
+                       }
+                     ]
+                   }";
+
+        return self::generate($prompt, 0.7);
+    }
+
+    /**
+     * 4. Daily Plan Adaptation
+     */
+    public static function adaptDailyPlan(array $currentPlan, array $userStatus): string
+    {
+        $planStr = json_encode($currentPlan);
+        $statusStr = json_encode($userStatus);
+
+        $prompt = "Regenerate the daily tasks based on user progress and blockers.
+                   Current Plan: $planStr
+                   User Status: $statusStr (completed tasks, blockers, updated time availability)
+                   
+                   Adjust difficulty and tasks automatically.
+                   Return JSON matching the 'tasks' array structure from roadmap.";
+
+        return self::generate($prompt, 0.5);
+    }
+
+    /**
+     * 5. Content Moderation
+     */
+    public static function moderateContent(string $text): string
+    {
+        $prompt = "Analyze this forum post for toxicity, spam, or high value.
+                   Text: \"$text\"
+                   
+                   Return JSON:
+                   {
+                     \"status\": \"approved | flagged | rejected\",
+                     \"score\": 0.0-1.0,
+                     \"is_high_value\": boolean,
+                     \"reason\": \"string\"
+                   }";
+
+        return self::generate($prompt, 0.2);
     }
 }

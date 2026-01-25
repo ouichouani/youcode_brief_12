@@ -5,6 +5,8 @@ namespace App\Controllers;
 
 use App\Models\Roadmap;
 use App\Core\Controller;
+use App\Models\User;
+
 class RoadmapController extends Controller
 {
     private Roadmap $rdmp;
@@ -14,13 +16,18 @@ class RoadmapController extends Controller
         $this->rdmp = new Roadmap();
     }
 
+    private function checkAuth()
+    {
+        if (!User::isAuthenticaded()) {
+            header('Location: ' . APP_ROOT . '/login');
+            exit;
+        }
+    }
+
     public function renderRoadmap()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        $userId = $_SESSION['user_id'] ?? 1;
+        $this->checkAuth();
+        $userId = $_SESSION['user']['id'];
         $roadmap = $this->rdmp->getRoadmap($userId);
 
         $this->view('roadmap/show', ['roadmap' => $roadmap]);

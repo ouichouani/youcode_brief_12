@@ -11,37 +11,9 @@
         </div>
 
 
-        <form action="/questionnaire" method="POST" class="space-y-8">
-            <?php if (empty($questions)): ?>
-                <div class="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 text-center">
-                    <p class="text-slate-400 italic">Chargement des questions...</p>
-                    <!-- Fallback if database is empty -->
-                    <div class="mt-6 space-y-6 text-left">
-                        <div class="p-6 bg-slate-800/30 rounded-xl border border-slate-700/50">
-                            <label class="block text-sm font-medium text-indigo-400 mb-2">Quel est votre objectif principal
-                                ?</label>
-                            <input type="text" name="responses[1]" placeholder="Ex: Devenir développeur Fullstack"
-                                class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                        </div>
-                        <div class="p-6 bg-slate-800/30 rounded-xl border border-slate-700/50">
-                            <label class="block text-sm font-medium text-indigo-400 mb-2">Quel est votre niveau actuel
-                                ?</label>
-                            <select name="responses[2]"
-                                class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                                <option value="débutant">Débutant</option>
-                                <option value="intermédiaire">Intermédiaire</option>
-                                <option value="avancé">Avancé</option>
-                            </select>
-                        </div>
-                        <div class="p-6 bg-slate-800/30 rounded-xl border border-slate-700/50">
-                            <label class="block text-sm font-medium text-indigo-400 mb-2">Combien d'heures par semaine
-                                pouvez-vous consacrer ?</label>
-                            <input type="number" name="responses[3]" placeholder="Ex: 10"
-                                class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                        </div>
-                    </div>
-                </div>
-            <?php else: ?>
+        <form action="<?= APP_ROOT ?>/questionnaire" method="POST" class="space-y-8">
+           
+
                 <div class="space-y-6">
                     <?php foreach ($questions as $q): ?>
                         <div
@@ -56,7 +28,6 @@
                         </div>
                     <?php endforeach; ?>
                 </div>
-            <?php endif; ?>
 
             <div class="flex justify-center pt-8">
                 <button type="submit"

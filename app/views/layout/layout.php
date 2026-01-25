@@ -26,25 +26,35 @@
             </div>
 
             <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
-                <a href="/dashboard" class="hover:text-white transition-colors">Tableau de bord</a>
-                <a href="/opportunities" class="hover:text-white transition-colors">Opportunités</a>
-                <a href="/community" class="hover:text-white transition-colors">Communauté</a>
-                <a href="/skills" class="hover:text-white transition-colors">Mes Compétences</a>
+                <a href="<?= APP_ROOT ?>/dashboard" class="hover:text-white transition-colors">Tableau de bord</a>
+                <a href="<?= APP_ROOT ?>/opportunities" class="hover:text-white transition-colors">Opportunités</a>
+                <a href="<?= APP_ROOT ?>/community" class="hover:text-white transition-colors">Communauté</a>
+                <a href="<?= APP_ROOT ?>/skills" class="hover:text-white transition-colors">Mes Compétences</a>
             </div>
 
             <div class="flex items-center space-x-4">
 
-                <?php if (isset($_SESSION['user_id'])): ?>
+                <?php if (isset($_SESSION['user'])): ?>
                     <div class="flex items-center space-x-3">
-                        <span class="text-slate-400 text-sm hidden lg:inline">Prêt pour votre plan, Alex ?</span>
-                        <a href="/profile"
-                            class="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-xs text-white">JD</a>
-                        <a href="/logout" class="text-slate-400 hover:text-red-400 p-2"><i
-                                class="fas fa-sign-out-alt"></i></a>
+                        <span class="text-slate-400 text-sm hidden lg:inline">Bonjour,
+                            <?= htmlspecialchars($_SESSION['user']['name'] ?? 'Utilisateur') ?></span>
+                        <a href="<?= APP_ROOT ?>/profile"
+                            class="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-xs text-white">
+                            <?= strtoupper(substr($_SESSION['user']['name'] ?? 'U', 0, 2)) ?>
+                        </a>
+                        <a href="<?= APP_ROOT ?>/logout"
+                            class="text-slate-400 hover:text-red-400 p-2 flex items-center space-x-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            <span>Déconnexion</span>
+                        </a>
                     </div>
                 <?php else: ?>
-                    <a href="/login" class="text-slate-300 hover:text-white text-sm font-medium">Connexion</a>
-                    <a href="/signup"
+                    <a href="<?= APP_ROOT ?>/login"
+                        class="text-slate-300 hover:text-white text-sm font-medium">Connexion</a>
+                    <a href="<?= APP_ROOT ?>/signup"
                         class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-full text-sm font-semibold transition-all transform hover:scale-105">
                         Essayer l'IA
                     </a>

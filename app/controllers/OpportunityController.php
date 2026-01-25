@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace App\controllers;
 
 use App\Core\Controller;
 use App\Models\Opportunity;
@@ -10,26 +10,25 @@ use App\Models\User;
 
 class OpportunityController extends Controller
 {
-    // public function showOp(){
-    //     $this->view("opportinity/index");
-    // }
-    // List toutes les opportunities
-
-
+    private function checkAuth()
+    {
+        if (!User::isAuthenticaded()) {
+            header('Location: ' . APP_ROOT . '/login');
+            exit;
+        }
+    }
 
     public function showAll()
     {
+        $this->checkAuth();
         $opportunities = Opportunity::getAll();
         $this->view("opportinity/index", ['opportunities' => $opportunities]);
     }
 
-    // Voir details d'une opportunity
     public function show($id)
     {
+        $this->checkAuth();
         $opportunity = Opportunity::getById($id);
-        // require_once __DIR__ . "/../views/opportinity/show.php";
+        $this->view("opportinity/show", ['opportunity' => $opportunity]);
     }
-
-
-
 }

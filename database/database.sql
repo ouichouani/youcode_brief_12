@@ -1,4 +1,4 @@
--- Active: 1768245236744@@127.0.0.1@5432@EvolveAi
+-- Active: 1768314244387@@localhost@5432@youcode_brief_12
 /*
 offfff
 
@@ -19,9 +19,9 @@ offfff
 
 
 -- DATABASE CREATION 
-CREATE DATABASE youcode_brief_12 ;
- youcode_brief_12 ;
+DROP DATABASE youcode_brief_12 ;
 
+CREATE DATABASE youcode_brief_12 ;
 
 -- ENUM CREATION
 CREATE TYPE task_status_enum AS ENUM ('pending', 'completed', 'blocked');
@@ -54,7 +54,8 @@ CREATE TABLE roadmap (
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
     step INT NOT NULL,
     content TEXT NOT NULL,
-    skills TEXT [], -- array of skill names or tags
+    --skills TEXT [], -- array of skill names or tags
+    -- skills TEXT DEFAULT [(SELECT name from skills where roadmap_id = id )]
     duration VARCHAR(50),
     passed BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -108,7 +109,7 @@ CREATE TABLE question (
 CREATE TABLE answers (
     id SERIAL PRIMARY KEY,
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
-    question_id BIGINT REFERENCES questions (id) ON DELETE CASCADE,
+    question_id BIGINT REFERENCES question (id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -126,7 +127,8 @@ CREATE TABLE opportunities (
 
 CREATE TABLE skills (
     id SERIAL PRIMARY KEY,
-    user_id BIGINT REFERENCES users (id) ON DELETE SET NULL ,
+    user_id INT REFERENCES users (id) ON DELETE CASCADE ,
+    roadmap_id INT REFERENCES roadmap (id) ON DELETE SET NULL,
     name VARCHAR(150) NOT NULL,
     description TEXT,
     category skill_category_enum DEFAULT 'other'
@@ -200,6 +202,5 @@ INSERT INTO question (CONTENT) VALUES
 ('Which device will you use for learning?'),
 ('What type of lesson format do you prefer?');
 
-
 select * from users;
-select * from questions;
+select * from plan ;

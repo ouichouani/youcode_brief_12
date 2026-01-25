@@ -20,7 +20,7 @@ class Questionnaire
         $this->ai = new AI();
     }
 
-    public function getAllQuest(): array
+    public function getAllQuest(): array|object
     {
         $request = "SELECT * FROM {$this->questionsTable} ORDER BY id ASC";
         $stmt = $this->db->prepare($request);
@@ -32,6 +32,10 @@ class Questionnaire
     {
         $this->db->beginTransaction();
         try {
+            // Clear old responses first
+            $deleteStmt = $this->db->prepare("DELETE FROM {$this->responsesTable} WHERE user_id = ?");
+            $deleteStmt->execute([$userId]);
+
             $stmt = $this->db->prepare("INSERT INTO {$this->responsesTable} (user_id, question_id, response_text) VALUES (?, ?, ?)");
             foreach ($responses as $questionId => $responseText) {
                 $stmt->execute([$userId, (int) $questionId, $responseText]);
@@ -41,13 +45,12 @@ class Questionnaire
         } catch (Exception $e) {
             $this->db->rollBack();
             return false;
-
         }
     }
 
     public function getResponses($userId): array
     {
-        $request = "SELECT r.*, q.question_text 
+        $request = "SELECT r.*, q.content 
                     FROM {$this->responsesTable} r 
                     JOIN {$this->questionsTable} q ON r.question_id = q.id 
                     WHERE r.user_id = ?";
@@ -56,13 +59,20 @@ class Questionnaire
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function generateRoadmapForUser($userId): string
+    public function generateRoadmapForUser($userId, ?string $selectedOpportunity = null): string
     {
         $responses = $this->getResponses($userId);
         if (empty($responses)) {
-            return "No responses found for user.";
+            return json_encode(['error' => "No responses found for user."]);
         }
-        return $this->ai->generateRoadmap($responses);
+
+        // Format responses for AI context
+        $formattedResponses = [];
+        foreach ($responses as $r) {
+            $formattedResponses[$r['content']] = $r['response_text'];
+        }
+
+        return $this->ai->generateStandardRoadmap($formattedResponses, $selectedOpportunity);
     }
 }
 
