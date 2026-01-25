@@ -55,7 +55,7 @@
                                     <span class="text-xs font-bold text-slate-400 uppercase tracking-tighter">Freelance /
                                         Remote</span>
                                 </div>
-                                <a href="/opportunity/<?= $op['id'] ?>"
+                                <a href="<?= APP_ROOT ?>/opportinity?id=<?= $op['id'] ?>"
                                     class="text-indigo-600 font-bold text-sm hover:translate-x-1 transition-transform">
                                     Détails & Action →
                                 </a>

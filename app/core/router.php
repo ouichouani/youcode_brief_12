@@ -32,7 +32,7 @@ class Router
     {
         $method = strtolower($this->request->getMethod());
         $path = $this->clean($this->request->getPath());
-
+        $params = $this->request->getBody() ; // that's an array
         $callback = $this->routes[$method][$path] ?? null;
 
         if (!$callback) {
@@ -50,7 +50,7 @@ class Router
             $callback[0] = new $callback[0];
         }
 
-        call_user_func($callback);
+        call_user_func($callback, $params);
     }
 
     private function clean(string $path): string

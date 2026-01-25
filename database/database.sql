@@ -1,4 +1,4 @@
--- Active: 1768314244387@@localhost@5432@youcode_brief_12
+-- Active: 1768299577181@@127.0.0.1@5432@youcode_brief_12
 /*
 offfff
 
@@ -48,24 +48,16 @@ CREATE TABLE "users" (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+drop table roadmap CASCADE;
+drop table plan CASCADE;
 
-CREATE TABLE roadmap (
-    id SERIAL PRIMARY KEY,
-    user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
-    step INT NOT NULL,
-    content TEXT NOT NULL,
-    --skills TEXT [], -- array of skill names or tags
-    -- skills TEXT DEFAULT [(SELECT name from skills where roadmap_id = id )]
-    duration VARCHAR(50),
-    passed BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
+drop table roadmap CASCADE;
+drop table roadmap CASCADE;
 
 CREATE TABLE plan (
     id SERIAL PRIMARY KEY,
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
-    roadmap_id BIGINT REFERENCES roadmap (id) ON DELETE CASCADE,
+    roadmap_id BIGINT REFERENCES roadmaps (id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     completion_percentage INT DEFAULT 0 CHECK (
         completion_percentage BETWEEN 0 AND 100
@@ -75,6 +67,7 @@ CREATE TABLE plan (
 );
 
 
+drop table tasks CASCADE;
 CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
     plan_id BIGINT REFERENCES plan (id) ON DELETE CASCADE,
@@ -85,6 +78,8 @@ CREATE TABLE tasks (
     status task_status_enum DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+alter table tasks add column user_id BIGINT REFERENCES users(id);
+alter table tasks add column skill_name VARCHAR;
 
 
 CREATE TABLE task_submissions (
@@ -128,12 +123,13 @@ CREATE TABLE opportunities (
 CREATE TABLE skills (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users (id) ON DELETE CASCADE ,
-    roadmap_id INT REFERENCES roadmap (id) ON DELETE SET NULL,
+    roadmap_id INT REFERENCES roadmaps (id) ON DELETE SET NULL,
     name VARCHAR(150) NOT NULL,
     description TEXT,
     category skill_category_enum DEFAULT 'other'
 );
 
+drop table posts cascade;
 CREATE TABLE posts (
     id SERIAL PRIMARY KEY,
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
@@ -172,6 +168,7 @@ CREATE TABLE IF NOT EXISTS user_responses (
 );
 
 -- Roadmaps table
+drop table roadmaps cascade;
 CREATE TABLE IF NOT EXISTS roadmaps (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
@@ -204,3 +201,10 @@ INSERT INTO question (CONTENT) VALUES
 
 select * from users;
 select * from plan ;
+
+drop table plan CASCADE;
+select * from roadmaps;
+
+select * from skills;
+select * from plan;
+select * from tasks;

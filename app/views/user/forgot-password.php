@@ -29,7 +29,7 @@
                 <?php endif; ?>
 
                 <?php if (!isset($flash['success'])): ?>
-                <form action="/forgot-password" method="POST" class="space-y-6">
+                <form action="<?= APP_ROOT ?>/forgot-password" method="POST" class="space-y-6">
                     <div class="bg-blue-50 border border-blue-100 rounded-lg p-4">
                         <p class="text-sm text-blue-700">
                             <i class="fas fa-info-circle mr-2"></i>
