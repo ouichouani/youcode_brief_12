@@ -18,7 +18,7 @@
                 <h3 class="text-xl font-bold text-slate-800">Aucune opportunité pour le moment</h3>
                 <p class="text-slate-500 mt-2 max-w-sm mx-auto">Générez ou régénérez votre plan pour permettre à l'IA
                     d'analyser le marché pour vous.</p>
-                <a href="/plan"
+                <a href="<?= APP_ROOT ?>/plan"
                     class="mt-8 inline-flex bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-all">Analyser
                     le marché</a>
             </div>
@@ -38,7 +38,8 @@
                             </div>
 
                             <h3 class="text-xl font-black text-slate-800 mb-3 group-hover:text-indigo-600 transition-colors">
-                                <?= htmlspecialchars($op['title']) ?></h3>
+                                <?= htmlspecialchars($op['title']) ?>
+                            </h3>
                             <p class="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-3">
                                 <?= htmlspecialchars($op['description']) ?>
                             </p>

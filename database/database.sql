@@ -1,4 +1,4 @@
--- Active: 1768299577181@@127.0.0.1@5432@youcode_brief_12
+-- Active: 1768245236744@@127.0.0.1@5432@EvolveAi
 /*
 offfff
 
@@ -204,7 +204,8 @@ select * from plan ;
 
 drop table plan CASCADE;
 select * from roadmaps;
-
+select * from users;
 select * from skills;
 select * from plan;
 select * from tasks;
+select * from opportunities;
